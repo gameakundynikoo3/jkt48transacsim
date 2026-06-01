@@ -766,9 +766,21 @@ function updateUI(){
   renderInventory();
   saveGame();
 }
+function checkLevel2Unlock() {
+  const pageL2 = document.getElementById('page-l2');
+  const navL2 = document.getElementById('nav-l2');
+  if (successPoints >= LEVEL2_THRESHOLD) {
+    if (pageL2) pageL2.classList.remove('page-locked');
+    if (navL2) navL2.classList.remove('locked');
+  } else {
+    if (pageL2) pageL2.classList.add('page-locked');
+    if (navL2) navL2.classList.add('locked');
+  }
+}
 function addJkt48Points(amt){ jkt48Points+=amt; updateUI(); toast(`🎫 +${amt} JKT48 Point dari transaksi!`,'#4ade80'); }
 function addSuccessPoints(delta){
   successPoints=Math.max(0,successPoints+delta); updateUI();
+  checkLevel2Unlock();
   if(delta>0) toast(` +${delta} Poin Keberhasilan!`,'var(--gold)');
   else if(delta<0) toast(` ${delta} Poin Keberhasilan`,'#f87171');
 }
@@ -881,7 +893,7 @@ function goPage(id){
   document.getElementById('nav-'+id).classList.add('active');
 }
 function genParticles(){ for(let i=0;i<20;i++){ const d=document.createElement('div'); d.className='particle'; d.style.cssText=`left:${Math.random()*100}%;width:${2+Math.random()*3}px;height:${2+Math.random()*3}px;animation-duration:${3+Math.random()*4}s;animation-delay:${Math.random()*5}s`; document.getElementById('particles').appendChild(d); } }
-genParticles(); loadGame(); renderInventory(); updateUI(); loadFan();
+genParticles(); loadGame(); renderInventory(); updateUI(); loadFan(); checkLevel2Unlock();
 
 // ========== LEVEL 2 — MnG (Meet & Greet) ==========
 const MNG_MEMBERS = [
