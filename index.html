@@ -4,10 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>JKT48 Transaction Simulator · Poin Keberhasilan & Restock</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Oxanium:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 /* =========================================== */
-/* KODE CSS ASLI (TIDAK DIUBAH) */
+/* KODE CSS ASLI (tidak ada perubahan berarti) */
 /* =========================================== */
 :root{
   --red:#dc2626;--red2:#b91c1c;--red3:#7f1d1d;
@@ -18,29 +18,229 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow-x:hidden;}
-body{background:linear-gradient(155deg,#080808 0%,#1a0000 45%,#280404 100%);font-family:'Rajdhani',sans-serif;color:var(--text);min-height:100vh;display:flex;flex-direction:column;padding-bottom:70px;}
+body{background:linear-gradient(155deg,#080808 0%,#1a0000 45%,#280404 100%);font-family:'Oxanium',sans-serif;color:var(--text);min-height:100vh;display:flex;flex-direction:column;padding-bottom:70px;}
+
+/* ===== LOGIN SCREEN ===== */
+.login-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, #0a0a0a, #1a0202);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s ease;
+}
+.login-card {
+  max-width: 400px;
+  width: 90%;
+  background: var(--card);
+  border: 1px solid rgba(220,38,38,0.5);
+  border-radius: 28px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 30px rgba(220,38,38,0.2);
+  animation: slide-in 0.5s cubic-bezier(0.34,1.4,0.64,1);
+}
+.login-card .logo {
+  font-family: 'Quantico', sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  background: linear-gradient(135deg, #fff, var(--red));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 8px;
+}
+.login-card .sub {
+  font-family: 'Oxanium', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-bottom: 40px;
+}
+.login-card input {
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 60px;
+  color: #fff;
+  font-size: 16px;
+  text-align: center;
+  font-family: 'Quantico', sans-serif;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  outline: none;
+  transition: all 0.2s;
+}
+.login-card input:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 12px rgba(220,38,38,0.4);
+}
+.login-card button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--red), var(--red2));
+  border: none;
+  border-radius: 60px;
+  font-family: 'Quantico', sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 4px 20px rgba(220,38,38,0.5);
+}
+.login-card button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+.error-msg {
+  color: #f87171;
+  font-size: 12px;
+  margin-top: 12px;
+  font-family: 'Oxanium', sans-serif;
+  letter-spacing: 1px;
+}
+
+/* ===== TOMBOL LOGOUT ===== */
+.logout-btn {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(220,38,38,0.6);
+  border-radius: 40px;
+  padding: 6px 14px;
+  font-family: 'Quantico', sans-serif;
+  font-size: 10px;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.2s;
+}
+.logout-btn:hover {
+  background: rgba(220,38,38,0.2);
+  color: #fff;
+  border-color: var(--red);
+}
+.logout-btn span:first-child {
+  font-size: 12px;
+}
+
+/* ===== MODAL KONFIRMASI LOGOUT ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.2s, opacity 0.2s;
+}
+.modal-overlay.show {
+  visibility: visible;
+  opacity: 1;
+}
+.logout-modal {
+  background: linear-gradient(145deg, #1a0a0a, #0f0303);
+  border: 1px solid rgba(220,38,38,0.5);
+  border-radius: 28px;
+  padding: 28px 24px;
+  max-width: 320px;
+  width: 80%;
+  text-align: center;
+  box-shadow: 0 20px 35px rgba(0,0,0,0.6), 0 0 25px rgba(220,38,38,0.2);
+  animation: modalPop 0.25s cubic-bezier(0.34,1.2,0.64,1);
+}
+@keyframes modalPop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.logout-modal p {
+  font-family: 'Quantico', sans-serif;
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+}
+.logout-modal button {
+  padding: 10px 24px;
+  border-radius: 40px;
+  font-family: 'Quantico', sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  border: none;
+}
+.logout-modal .btn-yes {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: white;
+  box-shadow: 0 2px 12px rgba(220,38,38,0.5);
+}
+.logout-modal .btn-yes:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+.logout-modal .btn-no {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #ccc;
+}
+.logout-modal .btn-no:hover {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+/* ANIMASI UNTUK TOMBOL RESTOCK SAAT STOK HABIS */
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(220,38,38,0); }
+  100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); }
+}
+.restock-btn.out-of-stock {
+  animation: pulse-red 0.8s infinite;
+  background: rgba(220,38,38,0.3);
+  border-color: var(--red);
+  color: white;
+}
+
+/* sisanya CSS asli (tidak diubah) */
 .particle{position:fixed;top:-8px;border-radius:50%;background:rgba(220,38,38,0.35);pointer-events:none;z-index:0;animation:dot-fall linear infinite;}
 @keyframes dot-fall{from{transform:translateY(-10px);opacity:.7}to{transform:translateY(105vh);opacity:0}}
 header{position:sticky;top:0;z-index:100;background:linear-gradient(90deg,#9b1c1c,var(--red),#9b1c1c);padding:11px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 28px rgba(220,38,38,0.55);border-bottom:2px solid rgba(255,255,255,0.1);}
-.logo-wrap .logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:18px;letter-spacing:3px;text-shadow:0 0 18px rgba(255,255,255,0.4);}
-.logo-wrap .sub{font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:5px;}
+.logo-wrap .logo{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;letter-spacing:3px;text-shadow:0 0 18px rgba(255,255,255,0.4);}
+.logo-wrap .sub{font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:5px;font-family:'Oxanium',sans-serif;}
 .balances{display:flex;gap:18px;align-items:center;}
 .balance-box{display:flex;flex-direction:column;align-items:flex-end;}
-.balance-box .label{font-size:9px;color:rgba(255,255,255,0.45);letter-spacing:2px;font-family:'Orbitron',sans-serif;}
-.balance-box .val{font-family:'Orbitron',sans-serif;font-weight:900;font-size:20px;}
+.balance-box .label{font-size:9px;color:rgba(255,255,255,0.45);letter-spacing:2px;font-family:'Quantico',sans-serif;}
+.balance-box .val{font-family:'Quantico',sans-serif;font-weight:700;font-size:20px;}
 .balance-box .val.jkt48{color:#4ade80;text-shadow:0 0 8px #4ade80;}
 .balance-box .val.success{color:var(--gold);text-shadow:0 0 8px rgba(251,191,36,0.5);}
 .xp-bar-wrap{width:100%;max-width:460px;padding:0 14px;margin:8px auto 0;z-index:5;}
 .xp-track{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;}
 .xp-fill{height:100%;background:linear-gradient(90deg,var(--red),#ff6b6b);border-radius:3px;transition:width .5s cubic-bezier(.34,1.2,.64,1);box-shadow:0 0 8px var(--red);}
-.xp-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-align:right;margin-top:3px;}
+.xp-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-align:right;margin-top:3px;font-family:'Oxanium',sans-serif;}
 nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-gradient(0deg,rgba(10,0,0,0.97),rgba(18,2,2,0.97));border-top:1px solid rgba(220,38,38,0.22);display:flex;justify-content:space-around;align-items:stretch;height:64px;box-shadow:0 -4px 24px rgba(0,0,0,0.6);}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all .2s;border:none;background:none;color:inherit;position:relative;}
 .nav-item.active .nav-icon{color:var(--red);text-shadow:0 0 12px rgba(220,38,38,0.7);}
 .nav-item.active .nav-label{color:var(--red);}
 .nav-item.active::after{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--red);border-radius:0 0 2px 2px;box-shadow:0 0 8px var(--red);}
-.nav-icon{font-size:20px;color:var(--muted);transition:color .2s;font-family:'Orbitron',sans-serif;}
-.nav-label{font-size:11px;color:var(--muted);letter-spacing:2px;font-family:'Orbitron',sans-serif;transition:color .2s;}
+.nav-icon{font-size:20px;color:var(--muted);transition:color .2s;font-family:'Quantico',sans-serif;}
+.nav-label{font-size:11px;color:var(--muted);letter-spacing:2px;font-family:'Quantico',sans-serif;transition:color .2s;}
 .nav-item.locked{opacity:.38;cursor:not-allowed;}
 .page{display:none;flex-direction:column;align-items:center;width:100%;padding:14px 14px 10px;}
 .page.active{display:flex;}
@@ -49,33 +249,33 @@ nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-
 .monitor-bar{background:linear-gradient(90deg,#150000,#200404);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(220,38,38,0.14);}
 .monitor-bar .dots{display:flex;gap:5px;}
 .dot-btn{width:9px;height:9px;border-radius:50%;}
-.monitor-bar .title{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,0.28);letter-spacing:3px;}
+.monitor-bar .title{font-family:'Quantico',sans-serif;font-size:9px;color:rgba(255,255,255,0.28);letter-spacing:3px;}
 .card-body{padding:16px 18px 0;}
 .card-foot{padding:12px 18px 18px;}
-.section-label{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;color:rgba(220,38,38,0.7);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+.section-label{font-family:'Quantico',sans-serif;font-size:9px;font-weight:700;color:rgba(220,38,38,0.7);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
 .cart-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
 .cart-icon{font-size:20px;}
-.cart-name{flex:1;font-weight:600;font-size:15px;color:#e5e5e5;}
-.cart-price{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--gold);font-weight:700;}
+.cart-name{flex:1;font-weight:600;font-size:15px;color:#e5e5e5;font-family:'Oxanium',sans-serif;}
+.cart-price{font-family:'Quantico',sans-serif;font-size:12px;color:var(--gold);font-weight:700;}
 .divider{height:1px;background:rgba(255,255,255,0.07);margin:8px 0;}
 .total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
-.total-label{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--muted);letter-spacing:2px;}
-.total-val{font-family:'Orbitron',sans-serif;font-weight:900;font-size:22px;color:#fff;}
-.btn-red{width:100%;padding:13px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 18px rgba(220,38,38,0.4);transition:all .22s;}
+.total-label{font-family:'Quantico',sans-serif;font-size:11px;color:var(--muted);letter-spacing:2px;}
+.total-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:22px;color:#fff;}
+.btn-red{width:100%;padding:13px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-family:'Quantico',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 18px rgba(220,38,38,0.4);transition:all .22s;}
 .btn-red:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(220,38,38,0.55);}
 .btn-red:active{transform:scale(.97);}
-.btn-ghost{width:100%;padding:12px;border-radius:11px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.55);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13px;letter-spacing:2px;cursor:pointer;}
-.btn-green{flex:1;padding:13px;border-radius:11px;border:none;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer;box-shadow:0 4px 16px rgba(74,222,128,0.3);}
-.btn-red-outline{flex:1;padding:13px;border-radius:11px;border:1px solid rgba(248,113,113,0.35);background:rgba(248,113,113,0.07);color:#f87171;font-family:'Orbitron',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer;}
-.ready-banner{padding:12px;border-radius:11px;background:rgba(74,222,128,0.07);border:1px solid rgba(74,222,128,0.24);font-size:14px;color:var(--green);text-align:center;}
+.btn-ghost{width:100%;padding:12px;border-radius:11px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.55);font-family:'Oxanium',sans-serif;font-weight:600;font-size:13px;letter-spacing:2px;cursor:pointer;}
+.btn-green{flex:1;padding:13px;border-radius:11px;border:none;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-family:'Quantico',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer;box-shadow:0 4px 16px rgba(74,222,128,0.3);}
+.btn-red-outline{flex:1;padding:13px;border-radius:11px;border:1px solid rgba(248,113,113,0.35);background:rgba(248,113,113,0.07);color:#f87171;font-family:'Quantico',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer;}
+.ready-banner{padding:12px;border-radius:11px;background:rgba(74,222,128,0.07);border:1px solid rgba(74,222,128,0.24);font-size:14px;color:var(--green);text-align:center;font-family:'Oxanium',sans-serif;}
 .scan-header{display:flex;justify-content:space-between;align-items:center;padding:12px 18px 0;}
-.scan-title{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--muted);letter-spacing:3px;}
-.scan-status{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;}
-.tap-scene{position:relative;display:flex;align-items:flex-end;justify-content:center;padding:20px 18px 8px;height:230px;}
+.scan-title{font-family:'Quantico',sans-serif;font-size:9px;color:var(--muted);letter-spacing:3px;}
+.scan-status{font-family:'Oxanium',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;}
+.tap-scene{position:relative;display:flex;align-items:flex-end;justify-content:center;padding:20px 18px 8px;height:260px;}
 .edc-wrap{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:2;}
-.edc-body{width:80px;height:130px;border-radius:12px 12px 16px 16px;background:linear-gradient(170deg,#323232,#181818,#0f0f0f);border:1.5px solid rgba(255,255,255,0.12);position:relative;box-shadow:0 10px 36px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.1);overflow:hidden;}
+.edc-body{width:88px;height:144px;border-radius:12px 12px 16px 16px;background:linear-gradient(170deg,#323232,#181818,#0f0f0f);border:1.5px solid rgba(255,255,255,0.12);position:relative;box-shadow:0 10px 36px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.1);overflow:hidden;}
 .edc-body::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),#ff6b6b,var(--red));border-radius:12px 12px 0 0;}
-.edc-screen{width:58px;height:36px;border-radius:6px;background:#050f05;border:1px solid rgba(255,255,255,0.07);margin:10px auto 0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(74,222,128,0.55);letter-spacing:1px;transition:all .35s;gap:2px;}
+.edc-screen{width:64px;height:40px;border-radius:6px;background:#050f05;border:1px solid rgba(255,255,255,0.07);margin:10px auto 0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Quantico',sans-serif;font-size:8px;color:rgba(74,222,128,0.55);letter-spacing:1px;transition:all .35s;gap:2px;}
 .edc-screen .s-line1{font-size:8px;}
 .edc-screen .s-line2{font-size:6px;opacity:.6;}
 .edc-screen.scanning{background:#02020f;animation:screen-blink .35s infinite;}
@@ -84,21 +284,38 @@ nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-
 .edc-screen.ok .s-line1{color:#4ade80;font-size:8px;font-weight:bold;letter-spacing:1px;}
 .edc-screen.ok .s-line2{color:#4ade80;font-size:9px;font-weight:bold;opacity:1;letter-spacing:2px;}
 @keyframes screen-blink{0%,100%{opacity:1}50%{opacity:.45}}
-.edc-nfc-zone{width:54px;height:22px;border-radius:4px;background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.12);margin:5px auto;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:.5;transition:all .3s;}
+.edc-nfc-zone{width:60px;height:24px;border-radius:4px;background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.12);margin:5px auto;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:.5;transition:all .3s;}
 .edc-nfc-zone.active{background:rgba(220,38,38,0.18);border-color:var(--red);opacity:1;box-shadow:0 0 12px rgba(220,38,38,0.5);animation:nfc-zone-pulse .25s ease-out 3;}
 @keyframes nfc-zone-pulse{0%{box-shadow:0 0 0 0 rgba(220,38,38,0.7);}100%{box-shadow:0 0 0 8px rgba(220,38,38,0);}}
 .edc-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px 8px;}
-.edc-key{height:9px;border-radius:2px;background:rgba(255,255,255,0.07);}
+.edc-key{height:10px;border-radius:2px;background:rgba(255,255,255,0.07);}
 .edc-key.g{background:rgba(74,222,128,0.35);}
 .edc-key.r{background:rgba(220,38,38,0.35);}
 .edc-key.y{background:rgba(251,191,36,0.35);}
-.edc-label{font-family:'Orbitron',sans-serif;font-size:8px;color:var(--muted);letter-spacing:2px;margin-top:6px;}
-.ofc-wrap{position:absolute;right:14px;top:8px;z-index:5;transform-origin:center center;animation:card-idle 2.2s ease-in-out infinite;}
-@keyframes card-idle{0%,100%{transform:rotate(-8deg) translateY(0);}50%{transform:rotate(-8deg) translateY(-8px);}}
+.edc-label{font-family:'Quantico',sans-serif;font-size:8px;color:var(--muted);letter-spacing:2px;margin-top:6px;}
+.ofc-wrap{position:absolute;right:10px;top:6px;z-index:5;transform-origin:center center;animation:card-idle 2.2s ease-in-out infinite;}
+@keyframes card-idle{0%,100%{transform:rotate(-12deg) translateY(0);}50%{transform:rotate(-12deg) translateY(-10px);}}
 .ofc-wrap.tapping{animation:card-tap 0.55s cubic-bezier(.4,0,.2,1) forwards;}
-@keyframes card-tap{0%{transform:rotate(-8deg) translateY(0) translateX(0);}40%{transform:rotate(-3deg) translateY(10px) translateX(-25px) scale(1.03);}75%{transform:rotate(0deg) translateY(43px) translateX(-62px) scale(1.0);}88%{transform:rotate(0deg) translateY(40px) translateX(-62px) scale(0.97);}100%{transform:rotate(0deg) translateY(42px) translateX(-62px) scale(0.99);}}
+@keyframes card-tap{0%{transform:rotate(-12deg) translateY(0px) translateX(0px) scale(1);}50%{transform:rotate(-4deg) translateY(60px) translateX(-55px) scale(1.02);}85%{transform:rotate(0deg) translateY(110px) translateX(-100px) scale(0.98);}100%{transform:rotate(0deg) translateY(108px) translateX(-100px) scale(0.97);}}
 .ofc-wrap.lifting{animation:card-lift 0.5s cubic-bezier(.34,1.4,.64,1) forwards;}
-@keyframes card-lift{0%{transform:rotate(0deg) translateY(42px) translateX(-62px);}100%{transform:rotate(-8deg) translateY(0) translateX(0);}}
+@keyframes card-lift{0%{transform:rotate(0deg) translateY(108px) translateX(-100px) scale(0.97);}100%{transform:rotate(-12deg) translateY(0px) translateX(0px) scale(1);}}
+@media(max-width:767px){
+  .tap-scene{height:300px;}
+  .ofc-wrap{right:8px;top:8px;}
+  .ofc{width:180px;height:114px;}
+  .chip{top:14px;left:14px;width:30px;height:21px;}
+  .nfc-wave{top:12px;right:12px;width:26px;height:26px;}
+  .nfc-wave span:nth-child(1){width:10px;height:10px;top:8px;right:8px;}
+  .nfc-wave span:nth-child(2){width:18px;height:18px;top:4px;right:4px;}
+  .nfc-wave span:nth-child(3){width:24px;height:24px;top:1px;right:1px;}
+  .card-bottom{padding:12px 12px 10px;}
+  .card-bottom .c-label{font-size:8px;}
+  .card-bottom .c-sub{font-size:8px;}
+  .ofc-wrap.tapping{animation:card-tap-mobile 0.55s cubic-bezier(.4,0,.2,1) forwards;}
+  @keyframes card-tap-mobile{0%{transform:rotate(-12deg) translateY(0px) translateX(0px) scale(1);}45%{transform:rotate(-5deg) translateY(80px) translateX(-60px) scale(1.05);}85%{transform:rotate(0deg) translateY(50px) translateX(-130px) scale(1.1);}100%{transform:rotate(0deg) translateY(45px) translateX(-150px) scale(1.08);}}
+  .ofc-wrap.lifting{animation:card-lift-mobile 0.5s cubic-bezier(.34,1.4,.64,1) forwards;}
+  @keyframes card-lift-mobile{0%{transform:rotate(0deg) translateY(138px) translateX(-105px) scale(1.08);}100%{transform:rotate(-12deg) translateY(0px) translateX(0px) scale(1);}}
+}
 .ofc{width:140px;height:88px;border-radius:10px;background:linear-gradient(135deg,var(--red) 0%,var(--red3) 55%,#1c0000 100%);position:relative;overflow:hidden;box-shadow:0 8px 28px rgba(220,38,38,0.55),inset 0 1px 0 rgba(255,255,255,0.15);cursor:pointer;}
 .ofc:active{transform:scale(.96);}
 .chip{position:absolute;top:12px;left:12px;width:24px;height:17px;border-radius:3px;background:linear-gradient(135deg,#ffd700,#e09600);}
@@ -109,171 +326,91 @@ nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-
 .nfc-wave span:nth-child(3){width:20px;height:20px;top:1px;right:1px;animation-delay:.36s;}
 @keyframes nfc-ring{0%{opacity:.8;transform:scale(.6)}100%{opacity:0;transform:scale(1)}}
 .card-bottom{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.6));padding:10px 10px 8px;}
-.card-bottom .c-label{font-family:'Orbitron',sans-serif;font-size:6px;color:rgba(255,255,255,0.9);letter-spacing:2px;}
-.card-bottom .c-sub{font-family:'Rajdhani',sans-serif;font-size:7px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-top:1px;}
+.card-bottom .c-label{font-family:'Quantico',sans-serif;font-size:6px;color:rgba(255,255,255,0.9);letter-spacing:2px;}
+.card-bottom .c-sub{font-family:'Oxanium',sans-serif;font-size:7px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-top:1px;}
 .card-ok{position:absolute;inset:0;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(74,222,128,0.3);font-size:32px;font-weight:900;animation:pop-in .38s cubic-bezier(.34,1.56,.64,1);}
-.tap-hint{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:3px;text-align:center;padding:0 18px 4px;animation:pulse-text 1.5s infinite;}
+.tap-hint{font-family:'Oxanium',sans-serif;font-weight:700;font-size:12px;letter-spacing:3px;text-align:center;padding:0 18px 4px;animation:pulse-text 1.5s infinite;}
 @keyframes pulse-text{0%,100%{opacity:.8}50%{opacity:1}}
 .progress-bg{height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--red),#ef4444);border-radius:2px;box-shadow:0 0 8px var(--red);transition:width .055s linear;}
 @keyframes pop-in{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 .fan-profile{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:11px 12px;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.06);}
-.avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red3));display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;box-shadow:0 0 18px rgba(220,38,38,0.4);flex-shrink:0;}
-.fan-name{font-weight:700;font-size:16px;color:#fff;}
-.fan-id{font-size:11px;color:var(--muted);letter-spacing:1px;}
+.avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red3));display:flex;align-items:center;justify-content:center;font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;box-shadow:0 0 18px rgba(220,38,38,0.4);flex-shrink:0;}
+.fan-name{font-weight:700;font-size:16px;color:#fff;font-family:'Oxanium',sans-serif;}
+.fan-id{font-size:11px;color:var(--muted);letter-spacing:1px;font-family:'Oxanium',sans-serif;}
 .points-box{display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:linear-gradient(135deg,rgba(220,38,38,0.07),rgba(220,38,38,0.02));border-radius:10px;border:1px solid rgba(220,38,38,0.18);margin-bottom:14px;}
-.points-label{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--muted);letter-spacing:2px;}
-.points-val{font-family:'Orbitron',sans-serif;font-weight:900;font-size:26px;}
+.points-label{font-family:'Quantico',sans-serif;font-size:9px;color:var(--muted);letter-spacing:2px;}
+.points-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:26px;}
 .points-right{text-align:right;}
-.points-total{font-family:'Orbitron',sans-serif;font-weight:900;font-size:20px;color:#fff;}
+.points-total{font-family:'Quantico',sans-serif;font-weight:700;font-size:20px;color:#fff;}
 .inventory-grid{display:grid;gap:8px;}
-.inventory-item{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.05);}
-.inv-name{display:flex;align-items:center;gap:8px;font-weight:600;}
-.inv-stock{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--gold);}
-.restock-btn{background:rgba(96,165,250,0.15);border:1px solid rgba(96,165,250,0.4);border-radius:20px;padding:4px 10px;font-size:10px;font-family:'Orbitron',sans-serif;cursor:pointer;transition:all .2s;color:#90cdf4;}
+.inventory-item{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.05);transition:all 0.2s;}
+.inventory-item.out-of-stock-item{background:rgba(220,38,38,0.15);border-color:rgba(220,38,38,0.5);}
+.inv-name{display:flex;align-items:center;gap:8px;font-weight:600;font-family:'Oxanium',sans-serif;}
+.inv-stock{font-family:'Quantico',sans-serif;font-size:12px;color:var(--gold);}
+.inv-stock.zero-stock{color:#f87171;font-weight:bold;}
+.restock-btn{background:rgba(96,165,250,0.15);border:1px solid rgba(96,165,250,0.4);border-radius:20px;padding:4px 10px;font-size:10px;font-family:'Quantico',sans-serif;cursor:pointer;transition:all .2s;color:#90cdf4;}
 .restock-btn:hover{background:#2b6cb0;color:white;}
 .result-box{text-align:center;padding:16px;border-radius:12px;animation:pop-in .4s cubic-bezier(.34,1.56,.64,1);}
 .result-box.success{background:rgba(74,222,128,0.07);border:1px solid rgba(74,222,128,0.24);}
 .result-box.penalty{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.24);}
 .result-emoji{font-size:34px;margin-bottom:4px;}
-.result-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:2px;margin-bottom:4px;}
-.result-sub{font-size:13px;color:var(--muted);}
-.pts-delta{display:inline-block;font-family:'Orbitron',sans-serif;font-weight:900;font-size:18px;margin-top:6px;padding:4px 14px;border-radius:20px;}
+.result-title{font-family:'Quantico',sans-serif;font-size:13px;letter-spacing:2px;margin-bottom:4px;}
+.result-sub{font-size:13px;color:var(--muted);font-family:'Oxanium',sans-serif;}
+.pts-delta{display:inline-block;font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;margin-top:6px;padding:4px 14px;border-radius:20px;}
 .pts-delta.plus{background:rgba(74,222,128,0.15);color:var(--green);}
 .pts-delta.minus{background:rgba(248,113,113,0.15);color:#f87171;}
-/* ── COMING SOON ── */
 .coming-soon{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:30px;}
 .cs-icon{font-size:64px;margin-bottom:16px;animation:float-icon 3s ease-in-out infinite;}
 @keyframes float-icon{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.cs-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:22px;letter-spacing:3px;color:#fff;margin-bottom:8px;}
-.cs-sub{font-size:14px;color:var(--muted);letter-spacing:1px;margin-bottom:20px;}
-.cs-badge{padding:8px 20px;border-radius:20px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);font-family:'Orbitron',sans-serif;font-size:10px;color:var(--muted);letter-spacing:3px;}
-/* ── LEVEL 2 PLACEHOLDER ── */
-.l2-placeholder{
-  width:100%;max-width:460px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:65vh;text-align:center;padding:30px;gap:16px;
-}
-.l2-badge{
-  font-size:64px;
-  animation:float-icon 3s ease-in-out infinite;
-}
-.l2-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:24px;letter-spacing:3px;color:var(--gold);}
-.l2-sub{font-size:15px;color:var(--muted);line-height:1.6;max-width:320px;}
-.l2-tag{
-  padding:10px 24px;border-radius:20px;
-  background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(251,191,36,0.06));
-  border:1px solid rgba(251,191,36,0.3);
-  font-family:'Orbitron',sans-serif;font-size:11px;
-  color:var(--gold);letter-spacing:3px;
-}
-#toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:#1a1a1a;border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 20px;font-family:'Rajdhani',sans-serif;font-size:14px;letter-spacing:1px;z-index:200;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;}
+.cs-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:22px;letter-spacing:3px;color:#fff;margin-bottom:8px;}
+.cs-sub{font-size:14px;color:var(--muted);letter-spacing:1px;margin-bottom:20px;font-family:'Oxanium',sans-serif;}
+.cs-badge{padding:8px 20px;border-radius:20px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);font-family:'Quantico',sans-serif;font-size:10px;color:var(--muted);letter-spacing:3px;}
+.l2-placeholder{width:100%;max-width:460px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:65vh;text-align:center;padding:30px;gap:16px;}
+.l2-badge{font-size:64px;animation:float-icon 3s ease-in-out infinite;}
+.l2-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:24px;letter-spacing:3px;color:var(--gold);}
+.l2-sub{font-size:15px;color:var(--muted);line-height:1.6;max-width:320px;font-family:'Oxanium',sans-serif;}
+.l2-tag{padding:10px 24px;border-radius:20px;background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(251,191,36,0.06));border:1px solid rgba(251,191,36,0.3);font-family:'Quantico',sans-serif;font-size:11px;color:var(--gold);letter-spacing:3px;}
+#toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:#1a1a1a;border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 20px;font-family:'Oxanium',sans-serif;font-size:14px;letter-spacing:1px;z-index:200;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .hidden{display:none!important;}
 .mt8{margin-top:8px;}
 .pay-choice{display:flex;gap:8px;}
-
-
-
-/* ═══════════════════════════════════════
-   RESPONSIVE — MOBILE & DESKTOP
-═══════════════════════════════════════ */
-
 .page{padding:14px clamp(8px,3vw,24px) 10px;}
 .card{max-width:min(460px,100%);}
 .xp-bar-wrap{max-width:min(860px,100%);}
-
-/* ── DESKTOP ── */
 @media(min-width:768px){
   body{padding-bottom:0;padding-left:200px;}
-
-  /* Header: fixed, full width — spans over sidebar */
-  header{
-    position:fixed;top:0;left:0;right:0;
-    width:100%;z-index:200;
-    padding:13px 32px;
-  }
+  header{position:fixed;top:0;left:0;right:0;width:100%;z-index:200;padding:13px 32px;}
   .logo-wrap .logo{font-size:22px;}
   .balance-box .val{font-size:24px;}
-
-  /* XP bar: fixed lebih rendah (turun) */
-  .xp-bar-wrap{
-    position:fixed;top:80px;  /* ← DIUBAH: dari 54px menjadi 80px agar lebih rendah */
-    left:0;right:0;
-    max-width:100%;padding:4px 32px;
-    z-index:199;
-    background:linear-gradient(180deg,rgba(10,0,0,0.95),rgba(10,0,0,0.7));
-    backdrop-filter:blur(6px);
-  }
-
-  /* Push page content below fixed header + xp bar */
-  .page{margin-top:120px;}  /* ← DIUBAH: dari 80px menjadi 120px */
-
-  /* Sidebar nav starts below header */
-  nav.bottom{
-    flex-direction:column;
-    width:200px;height:100vh;
-    top:0;left:0;right:auto;bottom:auto;
-    justify-content:flex-start;
-    padding-top:110px;gap:4px;
-    border-top:none;border-right:1px solid rgba(220,38,38,0.22);
-    box-shadow:4px 0 24px rgba(0,0,0,0.5);
-    z-index:150;
-  }
-  .nav-item{
-    flex-direction:row;justify-content:flex-start;
-    padding:12px 20px;gap:12px;
-    border-radius:0 12px 12px 0;margin-right:12px;
-  }
-  .nav-item.active::after{
-    left:0;right:auto;top:20%;bottom:20%;
-    width:3px;height:auto;
-    border-radius:0 2px 2px 0;
-  }
+  .xp-bar-wrap{position:fixed;top:80px;left:0;right:0;max-width:100%;padding:4px 32px;z-index:199;background:linear-gradient(180deg,rgba(10,0,0,0.95),rgba(10,0,0,0.7));backdrop-filter:blur(6px);}
+  .page{margin-top:120px;}
+  nav.bottom{flex-direction:column;width:200px;height:100vh;top:0;left:0;right:auto;bottom:auto;justify-content:flex-start;padding-top:110px;gap:4px;border-top:none;border-right:1px solid rgba(220,38,38,0.22);box-shadow:4px 0 24px rgba(0,0,0,0.5);z-index:150;}
+  .nav-item{flex-direction:row;justify-content:flex-start;padding:12px 20px;gap:12px;border-radius:0 12px 12px 0;margin-right:12px;}
+  .nav-item.active::after{left:0;right:auto;top:20%;bottom:20%;width:3px;height:auto;border-radius:0 2px 2px 0;}
   .nav-icon{font-size:22px;}
   .nav-label{font-size:11px;letter-spacing:2px;}
-
-  /* Page: single column centered, wider max */
-  .page{
-    flex-direction:column;
-    align-items:center;
-    padding:20px 32px;
-    max-width:100%;
-  }
+  .page{flex-direction:column;align-items:center;padding:20px 32px;max-width:100%;}
   .card{max-width:600px;width:100%;}
   #nextWrap{max-width:600px;width:100%;}
-
-  /* Inventory grid 2 cols + SCROLL jika terlalu panjang */
-  .inventory-grid{
-    grid-template-columns:1fr 1fr;
-    max-height: 400px;      /* ← TAMBAHAN: batas tinggi */
-    overflow-y: auto;       /* ← TAMBAHAN: scroll vertikal */
-    padding-right: 4px;
-  }
+  .inventory-grid{grid-template-columns:1fr 1fr;max-height:400px;overflow-y:auto;padding-right:4px;}
   .inventory-item{flex-direction:column;align-items:flex-start;gap:6px;}
-
-  /* Scan scene bigger */
   .tap-scene{height:260px;}
   .edc-body{width:100px;height:160px;}
   .edc-screen{width:74px;height:46px;}
   .ofc{width:180px;height:112px;}
   .ofc-wrap{right:30px;top:16px;}
-  /* Desktop-specific tap animation overrides */
   @keyframes card-tap{0%{transform:rotate(-8deg) translateY(0) translateX(0);}40%{transform:rotate(-3deg) translateY(30px) translateX(-90px) scale(1.03);}75%{transform:rotate(0deg) translateY(65px) translateX(-215px) scale(1.0);}88%{transform:rotate(0deg) translateY(62px) translateX(-215px) scale(0.97);}100%{transform:rotate(0deg) translateY(64px) translateX(-215px) scale(0.99);}}
   @keyframes card-lift{0%{transform:rotate(0deg) translateY(64px) translateX(-215px);}100%{transform:rotate(-8deg) translateY(0) translateX(0);}}
-
-  /* Buttons bigger */
   .btn-red,.btn-ghost,.btn-green,.btn-red-outline{font-size:13px;padding:14px;}
   .cart-name{font-size:16px;}
   .cart-price{font-size:13px;}
   .points-val{font-size:32px;}
   .total-val{font-size:26px;}
   .fan-name{font-size:18px;}
-
   #toast{top:90px;}
 }
-
-/* ── LARGE DESKTOP ── */
 @media(min-width:1200px){
   body{padding-left:240px;}
   nav.bottom{width:220px;}
@@ -283,9 +420,7 @@ nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-
   .inventory-grid{grid-template-columns:1fr 1fr 1fr;}
   .inventory-item{flex-direction:row;align-items:center;}
 }
-
-/* ── SMALL MOBILE ── */
-@media(max-width:380px){
+@media(max-width:1024px){
   header{padding:9px 12px;}
   .logo-wrap .logo{font-size:15px;}
   .balance-box .val{font-size:16px;}
@@ -297,144 +432,50 @@ nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-
   .points-val{font-size:22px;}
   .tap-scene{height:185px;}
 }
-
-/* ══════════════════════════════════════
-   LEVEL 2 — MnG (Meet & Greet)
-══════════════════════════════════════ */
 .l2-page{display:flex;flex-direction:column;align-items:center;width:100%;gap:14px;padding:14px clamp(8px,3vw,24px) 10px;}
-
-/* Member cards row */
 .mng-members{display:flex;gap:10px;overflow-x:auto;padding:4px 0 8px;width:100%;max-width:600px;scrollbar-width:thin;scrollbar-color:rgba(220,38,38,0.3) transparent;}
-.mng-member-card{
-  flex-shrink:0;width:110px;
-  background:linear-gradient(145deg,rgba(30,5,5,0.95),rgba(20,0,0,0.95));
-  border:1.5px solid rgba(220,38,38,0.2);
-  border-radius:14px;padding:12px 8px;
-  display:flex;flex-direction:column;align-items:center;gap:6px;
-  cursor:pointer;transition:all .2s;
-  position:relative;overflow:hidden;
-}
+.mng-member-card{flex-shrink:0;width:110px;background:linear-gradient(145deg,rgba(30,5,5,0.95),rgba(20,0,0,0.95));border:1.5px solid rgba(220,38,38,0.2);border-radius:14px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
 .mng-member-card:hover{border-color:rgba(220,38,38,0.6);transform:translateY(-2px);}
 .mng-member-card.selected{border-color:var(--red);box-shadow:0 0 20px rgba(220,38,38,0.35);background:linear-gradient(145deg,rgba(60,5,5,0.95),rgba(40,0,0,0.95));}
 .mng-member-card.selected::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),#ff6b6b);border-radius:14px 14px 0 0;}
-.member-avatar{
-  width:56px;height:56px;border-radius:50%;
-  background:linear-gradient(135deg,var(--red),var(--red3));
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Orbitron',sans-serif;font-weight:900;font-size:14px;
-  box-shadow:0 0 14px rgba(220,38,38,0.4);
-  position:relative;
-}
+.member-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red3));display:flex;align-items:center;justify-content:center;font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;box-shadow:0 0 14px rgba(220,38,38,0.4);position:relative;}
 .member-avatar .member-emoji{font-size:24px;}
-.member-name{font-family:'Orbitron',sans-serif;font-size:7px;color:#fff;letter-spacing:1px;text-align:center;line-height:1.4;}
-.member-team{font-size:8px;color:var(--muted);text-align:center;}
-
-/* Duration selector */
+.member-name{font-family:'Quantico',sans-serif;font-size:7px;color:#fff;letter-spacing:1px;text-align:center;line-height:1.4;}
+.member-team{font-size:8px;color:var(--muted);text-align:center;font-family:'Oxanium',sans-serif;}
 .duration-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%;max-width:600px;}
-.dur-btn{
-  padding:10px 4px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);
-  background:rgba(255,255,255,0.03);
-  color:var(--muted);font-family:'Orbitron',sans-serif;font-size:10px;
-  cursor:pointer;transition:all .2s;text-align:center;letter-spacing:1px;
-}
+.dur-btn{padding:10px 4px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:var(--muted);font-family:'Quantico',sans-serif;font-size:10px;cursor:pointer;transition:all .2s;text-align:center;letter-spacing:1px;}
 .dur-btn:hover{border-color:rgba(220,38,38,0.4);color:#fff;}
 .dur-btn.selected{border-color:var(--red);background:rgba(220,38,38,0.12);color:#fff;box-shadow:0 0 12px rgba(220,38,38,0.2);}
-.dur-price{font-size:8px;color:var(--gold);margin-top:2px;font-family:'Rajdhani',sans-serif;}
-
-/* MnG scan card — same style as merch */
+.dur-price{font-size:8px;color:var(--gold);margin-top:2px;font-family:'Oxanium',sans-serif;}
 .mng-card{width:100%;max-width:600px;background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,0.55),0 0 28px rgba(220,38,38,0.06);backdrop-filter:blur(12px);animation:slide-in .42s cubic-bezier(.34,1.4,.64,1) both;}
-
-/* ── SESSION TIMER ── */
-.session-wrap{
-  width:100%;max-width:600px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:20px;overflow:hidden;
-  box-shadow:0 16px 50px rgba(0,0,0,0.55);
-  animation:slide-in .42s cubic-bezier(.34,1.4,.64,1) both;
-}
-.session-header{
-  background:linear-gradient(90deg,#150000,#200404);
-  padding:9px 14px;display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid rgba(220,38,38,0.14);
-}
-.session-title{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,0.28);letter-spacing:3px;}
+.session-wrap{width:100%;max-width:600px;background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,0.55);animation:slide-in .42s cubic-bezier(.34,1.4,.64,1) both;}
+.session-header{background:linear-gradient(90deg,#150000,#200404);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(220,38,38,0.14);}
+.session-title{font-family:'Quantico',sans-serif;font-size:9px;color:rgba(255,255,255,0.28);letter-spacing:3px;}
 .session-body{padding:20px 18px;}
-.timer-display{
-  text-align:center;margin-bottom:20px;
-}
+.timer-display{text-align:center;margin-bottom:20px;}
 .timer-ring-wrap{position:relative;display:inline-block;margin-bottom:12px;}
 .timer-svg{transform:rotate(-90deg);}
 .timer-bg{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:6;}
 .timer-fill{fill:none;stroke:var(--red);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .1s linear,stroke .3s;}
 .timer-fill.warning{stroke:#fbbf24;}
 .timer-fill.over{stroke:#f87171;}
-.timer-number{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  font-family:'Orbitron',sans-serif;font-weight:900;font-size:28px;color:#fff;
-  text-shadow:0 0 20px rgba(255,255,255,0.3);
-}
+.timer-number{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Quantico',sans-serif;font-weight:700;font-size:28px;color:#fff;text-shadow:0 0 20px rgba(255,255,255,0.3);}
 .timer-number.warning{color:#fbbf24;text-shadow:0 0 20px rgba(251,191,36,0.5);}
 .timer-number.over{color:#f87171;text-shadow:0 0 20px rgba(248,113,113,0.5);animation:pulse-text 0.5s infinite;}
-.timer-label{font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--muted);letter-spacing:3px;}
-.session-info{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:10px 13px;
-  background:linear-gradient(135deg,rgba(220,38,38,0.07),rgba(220,38,38,0.02));
-  border-radius:10px;border:1px solid rgba(220,38,38,0.18);
-  margin-bottom:14px;
-}
+.timer-label{font-family:'Oxanium',sans-serif;font-size:12px;color:var(--muted);letter-spacing:3px;}
+.session-info{display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:linear-gradient(135deg,rgba(220,38,38,0.07),rgba(220,38,38,0.02));border-radius:10px;border:1px solid rgba(220,38,38,0.18);margin-bottom:14px;}
 .session-info-item{text-align:center;}
-.sinfo-label{font-family:'Orbitron',sans-serif;font-size:8px;color:var(--muted);letter-spacing:2px;}
-.sinfo-val{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;color:#fff;margin-top:2px;}
-.btn-start{
-  width:100%;padding:15px;border-radius:11px;border:none;
-  background:linear-gradient(135deg,#16a34a,#15803d);
-  color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;
-  cursor:pointer;box-shadow:0 4px 18px rgba(74,222,128,0.35);transition:all .22s;
-  margin-bottom:8px;
-}
-.btn-stop{
-  width:100%;padding:15px;border-radius:11px;border:none;
-  background:linear-gradient(135deg,var(--red),var(--red2));
-  color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;
-  cursor:pointer;box-shadow:0 4px 18px rgba(220,38,38,0.4);transition:all .22s;
-  margin-bottom:8px;
-  animation:pulse-stop 1s infinite;
-}
+.sinfo-label{font-family:'Quantico',sans-serif;font-size:8px;color:var(--muted);letter-spacing:2px;}
+.sinfo-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff;margin-top:2px;}
+.btn-start{width:100%;padding:15px;border-radius:11px;border:none;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 18px rgba(74,222,128,0.35);transition:all .22s;margin-bottom:8px;}
+.btn-stop{width:100%;padding:15px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 18px rgba(220,38,38,0.4);transition:all .22s;margin-bottom:8px;animation:pulse-stop 1s infinite;}
 @keyframes pulse-stop{0%,100%{box-shadow:0 4px 18px rgba(220,38,38,0.4);}50%{box-shadow:0 4px 28px rgba(220,38,38,0.7),0 0 40px rgba(220,38,38,0.2);}}
 .mng-result-box{text-align:center;padding:16px;border-radius:12px;animation:pop-in .4s cubic-bezier(.34,1.56,.64,1);}
 .mng-result-box.perfect{background:rgba(74,222,128,0.07);border:1px solid rgba(74,222,128,0.24);}
 .mng-result-box.over{background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.24);}
-
-/* ── LOCKED PAGE BLUR ── */
-.page-locked{
-  position:relative;
-  pointer-events:none;
-}
-.page-locked::after{
-  content:'🔒 1000 POIN KEBERHASILAN';
-  position:fixed;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  background:rgba(10,0,0,0.88);
-  border:1px solid rgba(220,38,38,0.4);
-  border-radius:16px;
-  padding:20px 32px;
-  font-family:'Orbitron',sans-serif;
-  font-size:13px;
-  color:var(--red);
-  letter-spacing:2px;
-  text-align:center;
-  z-index:50;
-  box-shadow:0 0 40px rgba(220,38,38,0.2);
-  pointer-events:none;
-  white-space:nowrap;
-}
-.page-locked .l2-page{
-  filter:blur(6px);
-  opacity:0.35;
-}
-/* ========== TAMBAHAN CSS UNTUK TOMBOL MUSIK (TIDAK MENGUBAH YANG LAIN) ========== */
+.page-locked{position:relative;pointer-events:none;}
+.page-locked::after{content:'🔒 1000 POIN KEBERHASILAN';position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(10,0,0,0.88);border:1px solid rgba(220,38,38,0.4);border-radius:16px;padding:20px 32px;font-family:'Quantico',sans-serif;font-size:13px;color:var(--red);letter-spacing:2px;text-align:center;z-index:50;box-shadow:0 0 40px rgba(220,38,38,0.2);pointer-events:none;white-space:nowrap;}
+.page-locked .l2-page{filter:blur(6px);opacity:0.35;}
 .music-control {
   display: flex;
   align-items: center;
@@ -449,7 +490,7 @@ nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-
   width: fit-content;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Quantico', sans-serif;
   box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 .music-control:hover {
@@ -468,21 +509,10 @@ nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-
   50% { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
-.music-icon {
-  font-size: 14px;
-  filter: drop-shadow(0 0 1px rgba(0,0,0,0.5));
-}
-.music-text {
-  color: rgba(255,255,255,0.85);
-  font-size: 9px;
-  letter-spacing: 1px;
-  font-weight: 500;
-}
+.music-icon { font-size: 14px; filter: drop-shadow(0 0 1px rgba(0,0,0,0.5)); }
+.music-text { color: rgba(255,255,255,0.85); font-size: 9px; letter-spacing: 1px; font-weight: 500; font-family: 'Oxanium', sans-serif; }
 @media(min-width: 768px) {
-  .music-control {
-    padding: 6px 16px;
-    gap: 8px;
-  }
+  .music-control { padding: 6px 16px; gap: 8px; }
   .music-icon { font-size: 16px; }
   .music-text { font-size: 10px; }
 }
@@ -490,215 +520,134 @@ nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-
 </head>
 <body>
 <div id="particles"></div>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-overlay">
+  <div class="login-card">
+    <div class="logo">JKT48</div>
+    <div class="sub">TRANSACTION SIMULATOR</div>
+    <input type="text" id="loginName" placeholder="Masukkan nama fans" autocomplete="off">
+    <button id="loginBtn">LOGIN</button>
+    <div id="loginError" class="error-msg hidden"></div>
+  </div>
+</div>
+
 <header>
   <div class="logo-wrap"><div class="logo">JKT48</div><div class="sub">TRANSACTION SIMULATOR</div></div>
   <div class="balances">
     <div class="balance-box"><div class="label"> JKT48 POINT</div><div class="val jkt48" id="jkt48PointsDisplay">350000</div></div>
     <div class="balance-box"><div class="label"> KEBERHASILAN</div><div class="val success" id="successPointsDisplay">0</div></div>
   </div>
+  <div id="logoutBtn" class="logout-btn hidden">
+    <span>🚪</span><span id="userNameDisplay"></span>
+  </div>
 </header>
+
 <div class="xp-bar-wrap"><div class="xp-track"><div class="xp-fill" id="xpFill" style="width:0%"></div></div><div class="xp-label" id="xpLabel">0 / 1000 → Level 2</div></div>
 <div id="toast"></div>
 
-<!-- PAGE L1 -->
-<div class="page active" id="page-l1">
-  <!-- ========== TAMBAHAN MUSIK (TIDAK MENGUBAH APAPUN) ========== -->
-  <audio id="bgMusic" loop preload="auto" style="display:none;">
-    <source src="background-music.mp3" type="audio/mpeg">
-  </audio>
-  <div id="musicToggle" class="music-control">
-    <span class="music-icon">🔇</span>
-    <span class="music-text">MUSIC OFF</span>
+<!-- MODAL KONFIRMASI LOGOUT -->
+<div id="logoutModal" class="modal-overlay">
+  <div class="logout-modal">
+    <p>⚠️ Yakin ingin logout?<br>Musik akan berhenti.</p>
+    <button class="btn-yes" id="confirmLogoutBtn">Iya</button>
+    <button class="btn-no" id="cancelLogoutBtn">Tidak</button>
   </div>
-  <!-- ========== AKHIR TAMBAHAN MUSIK ========== -->
-
-  <div class="card" id="cartCard">
-    <div class="monitor-bar"><div class="dots"><div></div></div><div class="title">JKT48 MERCH LIST PAY</div><div style="width:40px"></div></div>
-    <div class="card-body"><div class="section-label">🛒 Daftar Belanja Fans</div><div id="cartItems"></div><div class="divider"></div><div class="total-row"><div class="total-label">TOTAL</div><div class="total-val" id="cartTotal">0 POINT</div></div></div>
-    <div class="card-foot"><button class="btn-red" id="btnMintaKartu" onclick="requestCard()">MINTA KARTU OFC DARI FANS</button></div>
-  </div>
-  <div class="card hidden" id="scanCard">
-    <div class="scan-header"><span class="scan-title">ALAT EDC / SCAN</span><span class="scan-status" id="scanStatus" style="color:var(--blue)">● SIAP</span></div>
-    <div class="tap-scene">
-      <div class="edc-wrap">
-        <div class="edc-body">
-          <div class="edc-screen" id="edcScreen"><div class="s-line1">READY</div><div class="s-line2">TAP CARD</div></div>
-          <div class="edc-nfc-zone" id="edcNfcZone">📡</div>
-          <div class="edc-keys"><div class="edc-key"></div><div class="edc-key"></div><div class="edc-key"></div><div class="edc-key y"></div><div class="edc-key y"></div><div class="edc-key y"></div><div class="edc-key g"></div><div class="edc-key"></div><div class="edc-key r"></div></div>
-        </div>
-        <div class="edc-label">EDC</div>
-      </div>
-      <div class="ofc-wrap" id="ofcWrap">
-        <div class="ofc" id="ofcCard" onclick="startScan()">
-          <div class="chip"></div>
-          <div class="nfc-wave"><span></span><span></span><span></span></div>
-          <div class="card-bottom"><div class="c-label">JKT48 OFC</div><div class="c-sub"></div></div>
-        </div>
-      </div>
-    </div>
-    <div class="tap-hint" id="tapHint" style="color:var(--blue)">KETUK KARTU UNTUK TAP KE EDC</div>
-    <div id="scanProgressWrap" class="hidden" style="padding:4px 18px 14px"><div class="progress-bg"><div class="progress-fill" id="scanBar" style="width:0%"></div></div><div style="text-align:right;font-size:10px;color:var(--muted);margin-top:4px;" id="scanPct">0%</div></div>
-  </div>
-  <div class="card hidden" id="fanCard">
-    <div class="monitor-bar"><div class="dots"><div class="dot-btn" style="background:#ff5f57"></div><div class="dot-btn" style="background:#febc2e"></div><div class="dot-btn" style="background:#28c840"></div></div><div class="title">DATA FANS</div><div style="width:40px"></div></div>
-    <div class="card-body">
-      <div class="fan-profile"><div class="avatar" id="fanAvatar"></div><div><div class="fan-name" id="fanName"></div><div class="fan-id" id="fanId"></div></div></div>
-      <div class="points-box"><div><div class="points-label">JKT48 POINTS</div><div class="points-val" id="fanPts"></div></div><div class="points-right"><div class="points-label">TOTAL BELANJA</div><div class="points-total" id="fanTotal"></div><div id="fanDiff"></div></div></div>
-      <div class="section-label">ITEM YANG DIBELI</div><div id="miniCart" style="margin-bottom:14px"></div>
-    </div>
-    <div class="card-foot" id="paymentZone"></div>
-  </div>
-  <div style="width:100%;max-width:460px;" id="nextWrap" class="hidden"><button class="btn-ghost" onclick="nextFan()">↩ FANS BERIKUTNYA</button></div>
-  <div class="card">
-    <div class="monitor-bar"><div class="title">MANAJEMEN STOK MERCH</div><div style="width:40px"></div></div>
-    <div class="card-body"><div class="inventory-grid" id="inventoryList"></div></div>
-    <div class="card-foot"><div class="section-label">Restock menggunakan JKT48 Points</div></div>
-  </div>
-
 </div>
 
-<!-- PAGE L2 — MnG STAFF -->
-<div class="page page-locked" id="page-l2">
-  <div class="l2-page">
-
-    <!-- JADWAL CARD -->
-    <div class="mng-card" id="mngScheduleCard">
-      <div class="monitor-bar">
-        <div class="dots"><div class="dot-btn" style="background:#ff5f57"></div><div class="dot-btn" style="background:#febc2e"></div><div class="dot-btn" style="background:#28c840"></div></div>
-        <div class="title">STAFF MnG — JADWAL HARI INI</div>
-        <div style="width:40px"></div>
-      </div>
-      <div class="card-body" style="padding-bottom:16px;">
-        <div class="mng-day-info" id="mngDayInfo"></div>
-        <div class="section-label" style="margin-top:14px;margin-bottom:8px;">JADWAL SESI</div>
-        <div id="mngScheduleList"></div>
-        <div class="section-label" style="margin-top:14px;margin-bottom:6px;">SESI AKTIF SEKARANG</div>
-        <div id="mngActiveSesi"></div>
-      </div>
-      <div class="card-foot" id="mngCardFoot">
-        <button class="btn-red" id="btnMintaKartuMng" onclick="mngRequestCard()">MINTA KARTU OFC DARI FANS</button>
-      </div>
+<div id="mainContent" style="display: none;">
+  <!-- PAGE L1 -->
+  <div class="page active" id="page-l1">
+    <div id="musicToggle" class="music-control">
+      <span class="music-icon">🔇</span>
+      <span class="music-text">MUSIC OFF</span>
     </div>
 
-    <!-- SCAN CARD -->
-    <div class="mng-card hidden" id="mngScanCard">
-      <div class="scan-header"><span class="scan-title">ALAT EDC — TIKET MnG</span><span class="scan-status" id="mngScanStatus" style="color:var(--blue)">● SIAP</span></div>
+    <div class="card" id="cartCard">
+      <div class="monitor-bar"><div class="dots"><div></div></div><div class="title">JKT48 MERCH LIST PAY</div><div style="width:40px"></div></div>
+      <div class="card-body"><div class="section-label">🛒 Daftar Belanja Fans</div><div id="cartItems"></div><div class="divider"></div><div class="total-row"><div class="total-label">TOTAL</div><div class="total-val" id="cartTotal">0 POINT</div></div></div>
+      <div class="card-foot"><button class="btn-red" id="btnMintaKartu" onclick="requestCard()">MINTA KARTU OFC DARI FANS</button></div>
+    </div>
+    <div class="card hidden" id="scanCard">
+      <div class="scan-header"><span class="scan-title">ALAT EDC / SCAN</span><span class="scan-status" id="scanStatus" style="color:var(--blue)">● SIAP</span></div>
       <div class="tap-scene">
         <div class="edc-wrap">
           <div class="edc-body">
-            <div class="edc-screen" id="mngEdcScreen"><div class="s-line1">READY</div><div class="s-line2">TAP CARD</div></div>
-            <div class="edc-nfc-zone" id="mngEdcNfc">📡</div>
+            <div class="edc-screen" id="edcScreen"><div class="s-line1">READY</div><div class="s-line2">TAP CARD</div></div>
+            <div class="edc-nfc-zone" id="edcNfcZone">📡</div>
             <div class="edc-keys"><div class="edc-key"></div><div class="edc-key"></div><div class="edc-key"></div><div class="edc-key y"></div><div class="edc-key y"></div><div class="edc-key y"></div><div class="edc-key g"></div><div class="edc-key"></div><div class="edc-key r"></div></div>
           </div>
           <div class="edc-label">EDC</div>
         </div>
-        <div class="ofc-wrap" id="mngOfcWrap">
-          <div class="ofc" id="mngOfcCard" onclick="mngStartScan()">
+        <div class="ofc-wrap" id="ofcWrap">
+          <div class="ofc" id="ofcCard" onclick="startScan()">
             <div class="chip"></div>
             <div class="nfc-wave"><span></span><span></span><span></span></div>
-            <div class="card-bottom"><div class="c-label">JKT48 OFC</div><div class="c-sub">TAP KE EDC</div></div>
+            <div class="card-bottom"><div class="c-label">JKT48 OFC</div><div class="c-sub"></div></div>
           </div>
         </div>
       </div>
-      <div class="tap-hint" id="mngTapHint" style="color:var(--blue)">KETUK KARTU UNTUK TAP KE EDC</div>
-      <div id="mngProgressWrap" class="hidden" style="padding:4px 18px 14px">
-        <div class="progress-bg"><div class="progress-fill" id="mngScanBar" style="width:0%"></div></div>
-        <div style="text-align:right;font-size:10px;color:var(--muted);margin-top:4px;" id="mngScanPct">0%</div>
-      </div>
+      <div class="tap-hint" id="tapHint" style="color:var(--blue)">KETUK KARTU UNTUK TAP KE EDC</div>
+      <div id="scanProgressWrap" class="hidden" style="padding:4px 18px 14px"><div class="progress-bg"><div class="progress-fill" id="scanBar" style="width:0%"></div></div><div style="text-align:right;font-size:10px;color:var(--muted);margin-top:4px;" id="scanPct">0%</div></div>
     </div>
-
-    <!-- FAN DATA -->
-    <div class="mng-card hidden" id="mngFanCard">
-      <div class="monitor-bar">
-        <div class="dots"><div class="dot-btn" style="background:#ff5f57"></div><div class="dot-btn" style="background:#febc2e"></div><div class="dot-btn" style="background:#28c840"></div></div>
-        <div class="title">DATA FANS — MnG</div>
-        <div style="width:40px"></div>
-      </div>
+    <div class="card hidden" id="fanCard">
+      <div class="monitor-bar"><div class="dots"><div class="dot-btn" style="background:#ff5f57"></div><div class="dot-btn" style="background:#febc2e"></div><div class="dot-btn" style="background:#28c840"></div></div><div class="title">DATA FANS</div><div style="width:40px"></div></div>
       <div class="card-body">
-        <div class="fan-profile"><div class="avatar" id="mngFanAvatar"></div><div><div class="fan-name" id="mngFanName"></div><div class="fan-id" id="mngFanId"></div></div></div>
-        <div class="points-box">
-          <div><div class="points-label">JKT48 POINT</div><div class="points-val" id="mngFanPts"></div></div>
-          <div class="points-right"><div class="points-label">HARGA TIKET</div><div class="points-total" id="mngTicketPrice"></div><div id="mngFanDiff" style="font-family:'Orbitron',sans-serif;font-size:11px;margin-top:2px;"></div></div>
-        </div>
-        <div class="section-label">DETAIL TIKET</div>
-        <div style="background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);padding:10px 12px;margin-bottom:14px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-            <span style="color:var(--muted);font-size:12px;">Jalur / Sesi</span>
-            <span style="font-weight:700;font-size:13px;" id="mngDetailJalur"></span>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-            <span style="color:var(--muted);font-size:12px;">Member</span>
-            <span style="font-weight:700;font-size:13px;" id="mngDetailMember"></span>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-            <span style="color:var(--muted);font-size:12px;">Jumlah Tiket</span>
-            <span style="font-family:'Orbitron',sans-serif;font-size:13px;color:var(--gold);" id="mngDetailTicket"></span>
-          </div>
-          <div style="display:flex;justify-content:space-between;">
-            <span style="color:var(--muted);font-size:12px;">Durasi Sesi</span>
-            <span style="font-family:'Orbitron',sans-serif;font-size:13px;color:var(--gold);" id="mngDetailDur"></span>
-          </div>
-        </div>
+        <div class="fan-profile"><div class="avatar" id="fanAvatar"></div><div><div class="fan-name" id="fanName"></div><div class="fan-id" id="fanId"></div></div></div>
+        <div class="points-box"><div><div class="points-label">JKT48 POINTS</div><div class="points-val" id="fanPts"></div></div><div class="points-right"><div class="points-label">TOTAL BELANJA</div><div class="points-total" id="fanTotal"></div><div id="fanDiff"></div></div></div>
+        <div class="section-label">ITEM YANG DIBELI</div><div id="miniCart" style="margin-bottom:14px"></div>
       </div>
-      <div class="card-foot" id="mngPayZone"></div>
+      <div class="card-foot" id="paymentZone"></div>
     </div>
-
-    <!-- SESSION TIMER -->
-    <div class="session-wrap hidden" id="mngSession">
-      <div class="session-header">
-        <span class="session-title">⏱ SESI MnG BERJALAN</span>
-        <span style="font-family:'Rajdhani',sans-serif;font-size:12px;letter-spacing:2px;" id="mngSessionMember"></span>
-      </div>
-      <div class="session-body">
-        <div class="timer-display">
-          <div class="timer-ring-wrap">
-            <svg class="timer-svg" width="140" height="140" viewBox="0 0 140 140">
-              <circle class="timer-bg" cx="70" cy="70" r="60"/>
-              <circle class="timer-fill" id="timerCircle" cx="70" cy="70" r="60" stroke-dasharray="377" stroke-dashoffset="0"/>
-            </svg>
-            <div class="timer-number" id="timerNumber">0</div>
-          </div>
-          <div class="timer-label" id="timerLabel">SIAP DIMULAI</div>
-        </div>
-        <div class="session-info">
-          <div class="session-info-item"><div class="sinfo-label">DURASI</div><div class="sinfo-val" id="sinfoDur">—</div></div>
-          <div class="session-info-item"><div class="sinfo-label">MEMBER</div><div class="sinfo-val" id="sinfoMember">—</div></div>
-          <div class="session-info-item"><div class="sinfo-label">STATUS</div><div class="sinfo-val" id="sinfoStatus" style="color:var(--blue)">SIAP</div></div>
-        </div>
-        <button class="btn-start" id="btnStartSession" onclick="mngRunTimer()">▶ MULAI SESI</button>
-        <button class="btn-stop hidden" id="btnStop" onclick="mngStop()">⏹ HENTIKAN SESI</button>
-        <div id="mngSessionResult" class="hidden"></div>
-      </div>
+    <div style="width:100%;max-width:460px;" id="nextWrap" class="hidden"><button class="btn-ghost" onclick="nextFan()">↩ FANS BERIKUTNYA</button></div>
+    <div class="card">
+      <div class="monitor-bar"><div class="title">MANAJEMEN STOK MERCH</div><div style="width:40px"></div></div>
+      <div class="card-body"><div class="inventory-grid" id="inventoryList"></div></div>
+      <div class="card-foot"><div class="section-label">Restock menggunakan JKT48 Points</div></div>
     </div>
-
-    <!-- NEXT -->
-    <div style="width:100%;max-width:600px;" id="mngNextWrap" class="hidden">
-      <button class="btn-ghost" onclick="mngReset()">FANS MnG BERIKUTNYA</button>
-    </div>
-    <div style="width:100%;max-width:600px;margin-top:8px;" id="mngNextDayWrap" class="hidden">
-      <button class="btn-red" onclick="mngNextDay()">HARI BERIKUTNYA</button>
-    </div>
-
   </div>
-</div>
 
-<div class="page" id="page-l3">
-  <div class="coming-soon">
-    <div class="cs-icon">🌟</div>
-    <div class="cs-title">LEVEL 3</div>
-    <div class="cs-sub">Selesaikan Level 2 untuk membuka</div>
-    <div class="cs-badge">COMING SOON</div>
+  <!-- PAGE L2 — MnG STAFF -->
+  <div class="page page-locked" id="page-l2">
+    <div class="l2-page">
+      <div class="mng-card" id="mngScheduleCard">
+        <div class="monitor-bar"><div class="dots"><div class="dot-btn" style="background:#ff5f57"></div><div class="dot-btn" style="background:#febc2e"></div><div class="dot-btn" style="background:#28c840"></div></div><div class="title">STAFF MnG — JADWAL HARI INI</div><div style="width:40px"></div></div>
+        <div class="card-body" style="padding-bottom:16px;"><div class="mng-day-info" id="mngDayInfo"></div><div class="section-label" style="margin-top:14px;margin-bottom:8px;">JADWAL SESI</div><div id="mngScheduleList"></div><div class="section-label" style="margin-top:14px;margin-bottom:6px;">SESI AKTIF SEKARANG</div><div id="mngActiveSesi"></div></div>
+        <div class="card-foot" id="mngCardFoot"><button class="btn-red" id="btnMintaKartuMng" onclick="mngRequestCard()">MINTA KARTU OFC DARI FANS</button></div>
+      </div>
+      <div class="mng-card hidden" id="mngScanCard">
+        <div class="scan-header"><span class="scan-title">ALAT EDC — TIKET MnG</span><span class="scan-status" id="mngScanStatus" style="color:var(--blue)">● SIAP</span></div>
+        <div class="tap-scene"><div class="edc-wrap"><div class="edc-body"><div class="edc-screen" id="mngEdcScreen"><div class="s-line1">READY</div><div class="s-line2">TAP CARD</div></div><div class="edc-nfc-zone" id="mngEdcNfc">📡</div><div class="edc-keys"><div class="edc-key"></div><div class="edc-key"></div><div class="edc-key"></div><div class="edc-key y"></div><div class="edc-key y"></div><div class="edc-key y"></div><div class="edc-key g"></div><div class="edc-key"></div><div class="edc-key r"></div></div></div><div class="edc-label">EDC</div></div><div class="ofc-wrap" id="mngOfcWrap"><div class="ofc" id="mngOfcCard" onclick="mngStartScan()"><div class="chip"></div><div class="nfc-wave"><span></span><span></span><span></span></div><div class="card-bottom"><div class="c-label">JKT48 OFC</div><div class="c-sub">TAP KE EDC</div></div></div></div></div>
+        <div class="tap-hint" id="mngTapHint" style="color:var(--blue)">KETUK KARTU UNTUK TAP KE EDC</div>
+        <div id="mngProgressWrap" class="hidden" style="padding:4px 18px 14px"><div class="progress-bg"><div class="progress-fill" id="mngScanBar" style="width:0%"></div></div><div style="text-align:right;font-size:10px;color:var(--muted);margin-top:4px;" id="mngScanPct">0%</div></div>
+      </div>
+      <div class="mng-card hidden" id="mngFanCard">
+        <div class="monitor-bar"><div class="dots"><div class="dot-btn" style="background:#ff5f57"></div><div class="dot-btn" style="background:#febc2e"></div><div class="dot-btn" style="background:#28c840"></div></div><div class="title">DATA FANS — MnG</div><div style="width:40px"></div></div>
+        <div class="card-body"><div class="fan-profile"><div class="avatar" id="mngFanAvatar"></div><div><div class="fan-name" id="mngFanName"></div><div class="fan-id" id="mngFanId"></div></div></div><div class="points-box"><div><div class="points-label">JKT48 POINT</div><div class="points-val" id="mngFanPts"></div></div><div class="points-right"><div class="points-label">HARGA TIKET</div><div class="points-total" id="mngTicketPrice"></div><div id="mngFanDiff" style="font-family:'Quantico',sans-serif;font-size:11px;margin-top:2px;"></div></div></div><div class="section-label">DETAIL TIKET</div><div style="background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);padding:10px 12px;margin-bottom:14px;"><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:var(--muted);font-size:12px;">Jalur / Sesi</span><span style="font-weight:700;font-size:13px;" id="mngDetailJalur"></span></div><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:var(--muted);font-size:12px;">Member</span><span style="font-weight:700;font-size:13px;" id="mngDetailMember"></span></div><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:var(--muted);font-size:12px;">Jumlah Tiket</span><span style="font-family:'Quantico',sans-serif;font-size:13px;color:var(--gold);" id="mngDetailTicket"></span></div><div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);font-size:12px;">Durasi Sesi</span><span style="font-family:'Quantico',sans-serif;font-size:13px;color:var(--gold);" id="mngDetailDur"></span></div></div></div>
+        <div class="card-foot" id="mngPayZone"></div>
+      </div>
+      <div class="session-wrap hidden" id="mngSession">
+        <div class="session-header"><span class="session-title">⏱ SESI MnG BERJALAN</span><span style="font-family:'Oxanium',sans-serif;font-size:12px;letter-spacing:2px;" id="mngSessionMember"></span></div>
+        <div class="session-body"><div class="timer-display"><div class="timer-ring-wrap"><svg class="timer-svg" width="140" height="140" viewBox="0 0 140 140"><circle class="timer-bg" cx="70" cy="70" r="60"/><circle class="timer-fill" id="timerCircle" cx="70" cy="70" r="60" stroke-dasharray="377" stroke-dashoffset="0"/></svg><div class="timer-number" id="timerNumber">0</div></div><div class="timer-label" id="timerLabel">SIAP DIMULAI</div></div><div class="session-info"><div class="session-info-item"><div class="sinfo-label">DURASI</div><div class="sinfo-val" id="sinfoDur">—</div></div><div class="session-info-item"><div class="sinfo-label">MEMBER</div><div class="sinfo-val" id="sinfoMember">—</div></div><div class="session-info-item"><div class="sinfo-label">STATUS</div><div class="sinfo-val" id="sinfoStatus" style="color:var(--blue)">SIAP</div></div></div><button class="btn-start" id="btnStartSession" onclick="mngRunTimer()">▶ MULAI SESI</button><button class="btn-stop hidden" id="btnStop" onclick="mngStop()">⏹ HENTIKAN SESI</button><div id="mngSessionResult" class="hidden"></div></div>
+      </div>
+      <div style="width:100%;max-width:600px;" id="mngNextWrap" class="hidden"><button class="btn-ghost" onclick="mngReset()">FANS MnG BERIKUTNYA</button></div>
+      <div style="width:100%;max-width:600px;margin-top:8px;" id="mngNextDayWrap" class="hidden"><button class="btn-red" onclick="mngNextDay()">HARI BERIKUTNYA</button></div>
+    </div>
   </div>
-</div>
 
-<nav class="bottom">
-  <button class="nav-item active" id="nav-l1" onclick="goPage('l1')"><span class="nav-label">MERCH</span></button>
-  <button class="nav-item locked" id="nav-l2" onclick="goPage('l2')"><span class="nav-label">MnG</span></button>
-  <button class="nav-item locked" id="nav-l3" onclick="goPage('l3')"><span class="nav-label">LEVEL 3</span></button>
-</nav>
+  <div class="page" id="page-l3">
+    <div class="coming-soon"><div class="cs-icon">🌟</div><div class="cs-title">LEVEL 3</div><div class="cs-sub">Selesaikan Level 2 untuk membuka</div><div class="cs-badge">COMING SOON</div></div>
+  </div>
+
+  <nav class="bottom">
+    <button class="nav-item active" id="nav-l1" onclick="goPage('l1')"><span class="nav-label">MERCH</span></button>
+    <button class="nav-item locked" id="nav-l2" onclick="goPage('l2')"><span class="nav-label">MnG</span></button>
+    <button class="nav-item locked" id="nav-l3" onclick="goPage('l3')"><span class="nav-label">LEVEL 3</span></button>
+  </nav>
+</div>
 
 <script>
-// ========== SCRIPT ASLI (TIDAK ADA SATU BARIS YANG DIUBAH) ==========
+// ========== SCRIPT ASLI + PLAYLIST 3 LAGU ==========
 const INVENTORY_ITEMS = [
   { id:"pc_spcl",    name:"Photocard Special Terbatas",              price:60000,  icon:"", stock:5,  restockCost:60000  },
   { id:"bd_tshirt",  name:"BD T-Shirt + Bonus Photocard",            price:85000,  icon:"", stock:3,  restockCost:85000  },
@@ -737,13 +686,10 @@ for(let i=0;i<60;i++){
   const fn=rnd(firstNames), sur=rnd(surnames);
   const cart=randCart();
   const total=cart.reduce((s,it)=>s+it.price,0);
-  // Selang-seling: genap = bisa bayar, ganjil = tidak bisa bayar (pure random range)
   let pts;
   if(i % 2 === 0){
-    // bisa bayar: random antara total hingga total*1.8
     pts = total + Math.floor(Math.random() * total * 0.8) + 1000;
   } else {
-    // tidak bisa bayar: random antara 1000 hingga total-500 (min 1000)
     const maxShort = Math.max(1000, total - 500);
     pts = 1000 + Math.floor(Math.random() * Math.max(1, maxShort - 1000));
   }
@@ -755,23 +701,42 @@ let successPoints = 0;
 const LEVEL2_THRESHOLD = 1000;
 let currentFan=null, currentTotal=0, phase="queue";
 
+function checkZeroStockAndNotify() {
+  const zeroItems = INVENTORY_ITEMS.filter(item => item.stock === 0);
+  if (zeroItems.length > 0) {
+    const names = zeroItems.map(i => i.name).join(', ');
+    toast(`⚠️ Stok habis: ${names}. Segera restock di panel manajemen!`, '#f87171');
+  }
+}
+
 function renderInventory(){
   const c=document.getElementById('inventoryList');
   if(!c) return;
-  c.innerHTML=INVENTORY_ITEMS.map(item=>`
-    <div class="inventory-item">
+  c.innerHTML=INVENTORY_ITEMS.map(item=>{
+    const isZero = item.stock === 0;
+    return `
+    <div class="inventory-item ${isZero ? 'out-of-stock-item' : ''}">
       <div class="inv-name"><span>${item.icon}</span>${item.name}</div>
       <div style="display:flex;align-items:center;gap:8px;">
-        <span class="inv-stock"> ${item.stock}</span>
-        <button class="restock-btn" onclick="restockItem('${item.id}')">+1 (${item.restockCost})</button>
+        <span class="inv-stock ${isZero ? 'zero-stock' : ''}">${isZero ? 'HABIS' : item.stock}</span>
+        <button class="restock-btn ${isZero ? 'out-of-stock' : ''}" onclick="restockItem('${item.id}')">+1 (${item.restockCost})</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+  checkZeroStockAndNotify();
 }
+
 function restockItem(id){
   const item=INVENTORY_ITEMS.find(i=>i.id===id); if(!item) return;
-  if(jkt48Points>=item.restockCost){ jkt48Points-=item.restockCost; item.stock++; updateUI(); toast(`+1 ${item.name}! Sisa: ${jkt48Points} point`,'#4ade80'); }
+  if(jkt48Points>=item.restockCost){ 
+    jkt48Points-=item.restockCost; 
+    item.stock++; 
+    updateUI(); 
+    toast(`+1 ${item.name}! Sisa stok: ${item.stock}`, '#4ade80'); 
+  }
   else toast(` JKT48 Points kurang! Butuh ${item.restockCost} point`,'#f87171');
 }
+
 function updateUI(){
   document.getElementById('jkt48PointsDisplay').innerText=jkt48Points;
   document.getElementById('successPointsDisplay').innerText=successPoints;
@@ -852,7 +817,7 @@ function buildFanCard(){
   document.getElementById('fanTotal').textContent=currentTotal+' POINT';
   const dd=document.getElementById('fanDiff');
   if(!canPay) dd.innerHTML=`<span style="color:#f87171">KURANG: ${currentTotal-f.points} POINT</span>`;
-  else if(missingStock.length) dd.innerHTML=`<span style="color:#fbbf24">⚠️ STOK HABIS</span>`;
+  else if(missingStock.length) dd.innerHTML=`<span style="color:#fbbf24">⚠️ STOK HABIS: ${missingStock.join(', ')}</span>`;
   else dd.innerHTML=`<span style="color:var(--green)">SISA: ${f.points-currentTotal} POINT</span>`;
   document.getElementById('miniCart').innerHTML=f.cart.map(it=>`<div class="cart-row" style="padding:6px 0"><span>${it.icon}</span><span class="cart-name">${it.name}</span><span class="cart-price">${it.price} POINT</span></div>`).join('');
   window._txOk=ok;
@@ -897,11 +862,7 @@ function goPage(id){
 function genParticles(){ for(let i=0;i<20;i++){ const d=document.createElement('div'); d.className='particle'; d.style.cssText=`left:${Math.random()*100}%;width:${2+Math.random()*3}px;height:${2+Math.random()*3}px;animation-duration:${3+Math.random()*4}s;animation-delay:${Math.random()*5}s`; document.getElementById('particles').appendChild(d); } }
 genParticles(); renderInventory(); updateUI(); loadFan();
 
-
-// ══════════════════════════════════════════════════════
-// LEVEL 2 — MnG (Meet & Greet) SIMULATOR
-// ══════════════════════════════════════════════════════
-
+// ========== LEVEL 2 — MnG (Meet & Greet) ==========
 const MNG_MEMBERS = [
   "Alya Amanda","Anindya Ramadhani","Aurellia","Aurhel Alana",
   "Cathleen Nixie","Celline Thefani","Cynthia Yaputera","Fiony Alveria",
@@ -920,8 +881,6 @@ const MNG_MEMBERS = [
   "Maxine Faye","Mikaela Kusjanto","Nur Intan","Putry Jazyta",
   "Ralyne Van Irwan","Sona Kalyana",
 ];
-
-// Tiket → durasi & harga
 const MNG_TICKETS = [
   { tiket:1, sec:10, price:50000,  pts:40  },
   { tiket:2, sec:20, price:100000, pts:70  },
@@ -929,16 +888,13 @@ const MNG_TICKETS = [
   { tiket:4, sec:40, price:200000, pts:140 },
   { tiket:5, sec:50, price:250000, pts:180 },
 ];
-
 const SESSION_HOURS = [
   "10:00–11:00","11:00–12:00","12:00–13:00","13:00–14:00",
   "14:00–15:00","15:00–16:00","16:00–17:00","17:00–18:00"
 ];
-
-// MnG state
 let mngDay         = 1;
-let mngSchedule    = [];   // [{sesi,jam,member,jalur}]
-let mngCurrentSesi = 0;    // index in schedule
+let mngSchedule    = [];
+let mngCurrentSesi = 0;
 let mngFanData     = null;
 let mngTicketData  = null;
 let mngPhase       = 'schedule';
@@ -946,47 +902,33 @@ let mngTimerCount  = 0;
 let mngTimerMax    = 0;
 let mngTimerInt    = null;
 let mngOverSecs    = 0;
-let mngFansServed  = 0;    // fans in current sesi
-
+let mngFansServed  = 0;
 function rndInt(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
 function rndEl(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-// Generate schedule for one day
 function mngGenSchedule(){
   const totalSesi = rndInt(7,8);
   const jalur     = rndInt(1,26);
   let schedule    = [];
-  let usedMembers = [];
   let hour        = 0;
-  // 2 or 3 members per day
   const totalMembers = rndInt(2,3);
   let members = [];
   while(members.length < totalMembers){
     const m = rndEl(MNG_MEMBERS);
     if(!members.includes(m)) members.push(m);
   }
-  // Distribute sessions across members randomly
-  // Each member gets at least 1 sesi, rest random
   let memberSesi = members.map(()=>1);
   for(let i=members.length; i<totalSesi; i++){
     memberSesi[rndInt(0,members.length-1)]++;
   }
-  // Build schedule — consecutive sesi per member block, but randomise order
   let sesiIdx = 1;
   members.forEach((member, mi)=>{
     for(let s=0; s<memberSesi[mi]; s++){
-      schedule.push({
-        sesi: sesiIdx,
-        jam: SESSION_HOURS[hour],
-        member,
-        jalur,
-      });
+      schedule.push({ sesi: sesiIdx, jam: SESSION_HOURS[hour], member, jalur, });
       sesiIdx++; hour++;
     }
   });
   return { schedule, jalur, totalSesi };
 }
-
 function initMng(){
   const result = mngGenSchedule();
   mngSchedule    = result.schedule;
@@ -995,58 +937,49 @@ function initMng(){
   mngPhase       = 'schedule';
   renderSchedule();
 }
-
 function renderSchedule(){
   const s = mngSchedule;
   const jalur = s[0]?.jalur || '-';
-
-  // Day info
   document.getElementById('mngDayInfo').innerHTML = `
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
       <div style="background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.3);border-radius:10px;padding:8px 14px;flex:1;text-align:center;">
-        <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--muted);letter-spacing:2px;">HARI</div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:900;font-size:20px;color:#fff;">${mngDay}</div>
+        <div style="font-family:'Quantico',sans-serif;font-size:9px;color:var(--muted);letter-spacing:2px;">HARI</div>
+        <div style="font-family:'Quantico',sans-serif;font-weight:700;font-size:20px;color:#fff;">${mngDay}</div>
       </div>
       <div style="background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.3);border-radius:10px;padding:8px 14px;flex:1;text-align:center;">
-        <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--muted);letter-spacing:2px;">JALUR</div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:900;font-size:20px;color:var(--gold);">${jalur}</div>
+        <div style="font-family:'Quantico',sans-serif;font-size:9px;color:var(--muted);letter-spacing:2px;">JALUR</div>
+        <div style="font-family:'Quantico',sans-serif;font-weight:700;font-size:20px;color:var(--gold);">${jalur}</div>
       </div>
       <div style="background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.3);border-radius:10px;padding:8px 14px;flex:1;text-align:center;">
-        <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--muted);letter-spacing:2px;">TOTAL SESI</div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:900;font-size:20px;color:var(--green);">${s.length}</div>
+        <div style="font-family:'Quantico',sans-serif;font-size:9px;color:var(--muted);letter-spacing:2px;">TOTAL SESI</div>
+        <div style="font-family:'Quantico',sans-serif;font-weight:700;font-size:20px;color:var(--green);">${s.length}</div>
       </div>
     </div>`;
-
-  // Schedule list
   document.getElementById('mngScheduleList').innerHTML = s.map((item,i)=>`
     <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;margin-bottom:6px;
       background:${i===mngCurrentSesi?'rgba(220,38,38,0.1)':'rgba(255,255,255,0.02)'};
       border:1px solid ${i===mngCurrentSesi?'rgba(220,38,38,0.35)':'rgba(255,255,255,0.05)'};
       opacity:${i<mngCurrentSesi?0.4:1};">
-      <div style="font-family:'Orbitron',sans-serif;font-size:10px;color:${i===mngCurrentSesi?'var(--red)':'var(--muted)'};min-width:28px;">S${item.sesi}</div>
-      <div style="font-size:11px;color:var(--muted);min-width:90px;">${item.jam}</div>
-      <div style="flex:1;font-weight:600;font-size:13px;">${item.member}</div>
-      ${i<mngCurrentSesi?'<div style="color:var(--green);font-size:11px;">✓</div>':i===mngCurrentSesi?'<div style="color:var(--red);font-size:11px;font-family:\'Orbitron\',sans-serif;font-size:9px;">AKTIF</div>':''}
+      <div style="font-family:'Quantico',sans-serif;font-size:10px;color:${i===mngCurrentSesi?'var(--red)':'var(--muted)'};min-width:28px;">S${item.sesi}</div>
+      <div style="font-size:11px;color:var(--muted);min-width:90px;font-family:'Oxanium',sans-serif;">${item.jam}</div>
+      <div style="flex:1;font-weight:600;font-size:13px;font-family:'Oxanium',sans-serif;">${item.member}</div>
+      ${i<mngCurrentSesi?'<div style="color:var(--green);font-size:11px;">✓</div>':i===mngCurrentSesi?'<div style="color:var(--red);font-size:11px;font-family:\'Quantico\',sans-serif;font-size:9px;">AKTIF</div>':''}
     </div>`).join('');
-
-  // Active sesi info
   const cur = s[mngCurrentSesi];
   if(cur){
     document.getElementById('mngActiveSesi').innerHTML = `
       <div style="background:linear-gradient(135deg,rgba(220,38,38,0.12),rgba(220,38,38,0.04));border:1px solid rgba(220,38,38,0.3);border-radius:12px;padding:12px 14px;">
-        <div style="font-family:'Orbitron',sans-serif;font-size:10px;color:var(--red);letter-spacing:2px;margin-bottom:8px;">SESI ${cur.sesi} — ${cur.jam}</div>
-        <div style="font-weight:700;font-size:15px;margin-bottom:4px;">${cur.member}</div>
-        <div style="font-size:12px;color:var(--muted);">Jalur ${cur.jalur} · Fans ke-${mngFansServed+1}</div>
+        <div style="font-family:'Quantico',sans-serif;font-size:10px;color:var(--red);letter-spacing:2px;margin-bottom:8px;">SESI ${cur.sesi} — ${cur.jam}</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:4px;font-family:'Oxanium',sans-serif;">${cur.member}</div>
+        <div style="font-size:12px;color:var(--muted);font-family:'Oxanium',sans-serif;">Jalur ${cur.jalur} · Fans ke-${mngFansServed+1}</div>
       </div>`;
   } else {
     document.getElementById('mngActiveSesi').innerHTML =
-      '<div style="text-align:center;color:var(--green);font-family:\'Orbitron\',sans-serif;font-size:12px;padding:12px;">✅ SEMUA SESI SELESAI</div>';
+      '<div style="text-align:center;color:var(--green);font-family:\'Quantico\',sans-serif;font-size:12px;padding:12px;">✅ SEMUA SESI SELESAI</div>';
     document.getElementById('mngCardFoot').innerHTML =
       '<button class="btn-red" onclick="mngNextDay()">HARI BERIKUTNYA</button>';
   }
 }
-
-// ── REQUEST KARTU ──────────────────────────────────
 function mngRequestCard(){
   const cur = mngSchedule[mngCurrentSesi];
   if(!cur) return;
@@ -1060,8 +993,6 @@ function mngRequestCard(){
   document.getElementById('mngOfcWrap').classList.remove('tapping','lifting');
   mngPhase='scan_ready';
 }
-
-// ── SCAN ──────────────────────────────────────────
 function mngStartScan(){
   if(mngPhase!=='scan_ready') return;
   mngPhase='scanning';
@@ -1104,16 +1035,10 @@ function mngStartScan(){
     },500);
   },DUR);
 }
-
-// ── BUILD FAN CARD ────────────────────────────────
 function mngBuildFanCard(){
   const cur = mngSchedule[mngCurrentSesi];
-  // Random ticket count 1-5
   const ticketCount = rndInt(1,5);
   mngTicketData = MNG_TICKETS[ticketCount-1];
-  // Random fan
-  // Alternating can/can't pay like level 1
-  const cart=[{price:mngTicketData.price}];
   const total=mngTicketData.price;
   let pts;
   if(Math.random()<0.5){
@@ -1131,7 +1056,6 @@ function mngBuildFanCard(){
     points: pts,
     avatar: "MnG"
   };
-
   const canPay=mngFanData.points>=total;
   document.getElementById('mngFanAvatar').textContent=mngFanData.avatar;
   document.getElementById('mngFanName').textContent=mngFanData.name;
@@ -1147,7 +1071,6 @@ function mngBuildFanCard(){
   document.getElementById('mngDetailMember').textContent=cur.member;
   document.getElementById('mngDetailTicket').textContent=ticketCount+' tiket';
   document.getElementById('mngDetailDur').textContent=mngTicketData.sec+' detik';
-
   window._mngCanPay=canPay;
   document.getElementById('mngPayZone').innerHTML=`
     <div class="pay-choice">
@@ -1155,8 +1078,6 @@ function mngBuildFanCard(){
       <button class="btn-red-outline" onclick="mngStaffDecide(false)">❌ POINT TIDAK PAS</button>
     </div>`;
 }
-
-// ── STAFF KEPUTUSAN ───────────────────────────────
 function mngStaffDecide(choicePas){
   const ok=window._mngCanPay;
   let delta=0,type='',title='',sub='';
@@ -1178,8 +1099,6 @@ function mngStaffDecide(choicePas){
   if(ok&&choicePas) setTimeout(()=>mngStartSession(),900);
   else { showEl('mngNextWrap'); }
 }
-
-// ── SESSION TIMER ─────────────────────────────────
 function mngStartSession(){
   hideEl('mngFanCard');
   showEl('mngSession');
@@ -1198,13 +1117,11 @@ function mngStartSession(){
   hideEl('mngNextWrap');
   showEl('btnStartSession');
   hideEl('btnStop');
-  // reset circle classes
   const c=document.getElementById('timerCircle');
   const n=document.getElementById('timerNumber');
-  c.classList.remove('warning','over');
-  n.classList.remove('warning','over');
+  if(c)c.classList.remove('warning','over');
+  if(n)n.classList.remove('warning','over');
 }
-
 function mngRunTimer(){
   hideEl('btnStartSession');
   showEl('btnStop');
@@ -1233,7 +1150,6 @@ function mngRunTimer(){
     }
   },1000);
 }
-
 function mngStop(){
   clearInterval(mngTimerInt);
   hideEl('btnStop');
@@ -1265,7 +1181,6 @@ function mngStop(){
   showEl('mngNextWrap');
   mngPhase='done';
 }
-
 function mngRenderTimer(cur,max){
   const pct=Math.max(0,cur/max);
   const circ=2*Math.PI*60;
@@ -1275,98 +1190,189 @@ function mngRenderTimer(cur,max){
   if(circle)circle.style.strokeDashoffset=offset;
   if(numEl&&cur>=0)numEl.textContent=cur;
 }
-
 function mngResetEdc(){
   const sc=document.getElementById('mngEdcScreen');
   sc.innerHTML='<div class="s-line1">READY</div><div class="s-line2">TAP CARD</div>';
   sc.classList.remove('scanning','ok');
   document.getElementById('mngEdcNfc').classList.remove('active');
 }
-
-// Reset to next fan in same sesi, or move to next sesi
 function mngReset(){
   clearInterval(mngTimerInt);
   mngPhase='schedule';
-  // Move to next sesi after 3 fans per sesi (random 2-4)
   const fansPerSesi = rndInt(2,4);
   if(mngFansServed>=fansPerSesi){
     mngCurrentSesi++;
     mngFansServed=0;
   }
-  // Reset ofc
   document.getElementById('mngOfcCard').innerHTML=`<div class="chip"></div><div class="nfc-wave"><span></span><span></span><span></span></div><div class="card-bottom"><div class="c-label">JKT48 OFC</div><div class="c-sub">TAP KE EDC</div></div>`;
   document.getElementById('mngOfcWrap').classList.remove('tapping','lifting');
   document.getElementById('mngScanBar').style.width='0%';
   document.getElementById('mngScanPct').textContent='0%';
   hideEl('mngProgressWrap');hideEl('mngScanCard');hideEl('mngFanCard');hideEl('mngSession');hideEl('mngNextWrap');
   mngResetEdc();
-  // Restore footer
   const cur=mngSchedule[mngCurrentSesi];
   document.getElementById('mngCardFoot').innerHTML=cur
     ?'<button class="btn-red" id="btnMintaKartuMng" onclick="mngRequestCard()">MINTA KARTU OFC DARI FANS</button>'
     :'<button class="btn-red" onclick="mngNextDay()">HARI BERIKUTNYA</button>';
   renderSchedule();
 }
-
 function mngNextDay(){
   mngDay++;
   mngCurrentSesi=0;
   mngFansServed=0;
   initMng();
 }
-
 function showEl(id){const el=document.getElementById(id);if(el)el.classList.remove('hidden');}
 function hideEl(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');}
-
-// Init on load
 initMng();
 
-// ========== TAMBAHAN SCRIPT UNTUK MUSIK (TIDAK MENGUBAH YANG LAIN) ==========
-const musicAudio = document.getElementById('bgMusic');
-const musicBtn = document.getElementById('musicToggle');
-const iconSpan = musicBtn.querySelector('.music-icon');
-const textSpan = musicBtn.querySelector('.music-text');
-if (musicAudio) {
-  musicAudio.volume = 0.1;
-  musicAudio.addEventListener('error', () => {
-    toast("⚠️ Letakkan file background-music.mp3 di folder yang sama", "#f87171");
-  });
-}
+// ========== PLAYLIST 3 LAGU (DIPERBAIKI) ==========
+const PLAYLIST = [
+  "music1.mpeg",   // ganti dengan file lagu 1
+  "music2.mpeg",   // ganti dengan file lagu 2
+  "music3.mpeg"    // ganti dengan file lagu 3
+];
+let currentTrack = 0;
 let musicPlaying = false;
-// Fungsi untuk memulai musik (hanya sekali)
-function startMusicOnFirstInteraction() {
-  if (musicPlaying) return;
+let musicAudio = null;
+
+function playTrack(index) {
+  if (!musicAudio) {
+    musicAudio = new Audio();
+    musicAudio.volume = 0.1;
+  }
+  musicAudio.src = PLAYLIST[index];
+  musicAudio.load();
   musicAudio.play().then(() => {
     musicPlaying = true;
-    iconSpan.textContent = '🔊';
-    textSpan.textContent = 'MUSIC ON';
-  }).catch(e => console.log("Musik belum bisa diputar, butuh interaksi lain"));
-  // Lepaskan listener setelah berhasil atau gagal (tetap coba)
-  document.removeEventListener('click', startMusicOnFirstInteraction);
-  document.removeEventListener('touchstart', startMusicOnFirstInteraction);
-}
-// Pasang listener ke seluruh halaman untuk memulai musik pada interaksi pertama
-document.addEventListener('click', startMusicOnFirstInteraction);
-document.addEventListener('touchstart', startMusicOnFirstInteraction);
-// Fungsi toggle untuk tombol musik
-function toggleMusic() {
-  musicBtn.classList.add('pop');
-  setTimeout(() => musicBtn.classList.remove('pop'), 250);
-  if (!musicPlaying) {
-    musicAudio.play().then(() => {
-      musicPlaying = true;
-      iconSpan.textContent = '🔊';
-      textSpan.textContent = 'MUSIC ON';
-    }).catch(e => toast("Pastikan file background-music.mp3 ada", "#fbbf24"));
-  } else {
-    musicAudio.pause();
+    updateMusicButtonIcon(true);
+    // hapus event listener lama lalu pasang ulang
+    musicAudio.removeEventListener('ended', onTrackEnd);
+    musicAudio.addEventListener('ended', onTrackEnd);
+  }).catch(err => {
+    console.warn("Gagal main lagu:", err);
     musicPlaying = false;
-    iconSpan.textContent = '🔇';
-    textSpan.textContent = 'MUSIC OFF';
+    updateMusicButtonIcon(false);
+    toast(`⚠️ File lagu "${PLAYLIST[index]}" tidak ditemukan. Periksa nama file.`, '#f87171');
+  });
+}
+
+function onTrackEnd() {
+  // pindah ke lagu berikutnya (cyclic)
+  currentTrack = (currentTrack + 1) % PLAYLIST.length;
+  playTrack(currentTrack);
+}
+
+function startMusic() {
+  if (musicPlaying) return;
+  currentTrack = 0;
+  playTrack(0);
+}
+
+function stopMusic() {
+  if (musicAudio) {
+    musicAudio.pause();
+    musicAudio.removeEventListener('ended', onTrackEnd);
+  }
+  musicPlaying = false;
+  updateMusicButtonIcon(false);
+}
+
+function toggleMusic() {
+  const btn = document.getElementById('musicToggle');
+  if (!btn) return;
+  btn.classList.add('pop');
+  setTimeout(() => btn.classList.remove('pop'), 250);
+  if (musicPlaying) {
+    stopMusic();
+  } else {
+    startMusic();
   }
 }
-musicBtn.addEventListener('click', toggleMusic);
-// ========== AKHIR TAMBAHAN MUSIK ==========
+
+function updateMusicButtonIcon(isPlaying) {
+  const iconSpan = document.querySelector('#musicToggle .music-icon');
+  const textSpan = document.querySelector('#musicToggle .music-text');
+  if (iconSpan && textSpan) {
+    if (isPlaying) {
+      iconSpan.textContent = '🔊';
+      textSpan.textContent = 'MUSIC ON';
+    } else {
+      iconSpan.textContent = '🔇';
+      textSpan.textContent = 'MUSIC OFF';
+    }
+  }
+}
+
+// Pasang event listener tombol musik
+const musicBtnEl = document.getElementById('musicToggle');
+if (musicBtnEl) musicBtnEl.addEventListener('click', toggleMusic);
+
+// ========== LOGIN & LOGOUT DENGAN MODAL ==========
+const loginScreenDiv = document.getElementById('loginScreen');
+const mainContentDiv = document.getElementById('mainContent');
+const loginBtnEl = document.getElementById('loginBtn');
+const loginNameInputEl = document.getElementById('loginName');
+const loginErrorEl = document.getElementById('loginError');
+const logoutBtnDiv = document.getElementById('logoutBtn');
+const userNameSpan = document.getElementById('userNameDisplay');
+
+function showLogoutModal() {
+  const modal = document.getElementById('logoutModal');
+  if (modal) modal.classList.add('show');
+}
+function hideLogoutModal() {
+  const modal = document.getElementById('logoutModal');
+  if (modal) modal.classList.remove('show');
+}
+function doLogout() {
+  stopMusic();
+  localStorage.removeItem('jkt48_user');
+  localStorage.removeItem('jkt48_loggedIn');
+  mainContentDiv.style.display = 'none';
+  logoutBtnDiv.classList.add('hidden');
+  loginScreenDiv.style.display = 'flex';
+  loginNameInputEl.value = '';
+  loginErrorEl.classList.add('hidden');
+  hideLogoutModal();
+}
+function login() {
+  const name = loginNameInputEl.value.trim();
+  if (!name) {
+    loginErrorEl.textContent = 'Masukkan nama terlebih dahulu';
+    loginErrorEl.classList.remove('hidden');
+    return;
+  }
+  localStorage.setItem('jkt48_user', name);
+  localStorage.setItem('jkt48_loggedIn', 'true');
+  loginScreenDiv.style.display = 'none';
+  mainContentDiv.style.display = 'block';
+  userNameSpan.textContent = name;
+  logoutBtnDiv.classList.remove('hidden');
+  startMusic(); // mulai musik setelah login
+}
+logoutBtnDiv.addEventListener('click', showLogoutModal);
+document.getElementById('confirmLogoutBtn').addEventListener('click', doLogout);
+document.getElementById('cancelLogoutBtn').addEventListener('click', hideLogoutModal);
+loginBtnEl.addEventListener('click', login);
+loginNameInputEl.addEventListener('keypress', (e) => { if(e.key === 'Enter') login(); });
+
+window.addEventListener('DOMContentLoaded', () => {
+  const loggedIn = localStorage.getItem('jkt48_loggedIn');
+  const username = localStorage.getItem('jkt48_user');
+  if (loggedIn === 'true' && username) {
+    loginScreenDiv.style.display = 'none';
+    mainContentDiv.style.display = 'block';
+    userNameSpan.textContent = username;
+    logoutBtnDiv.classList.remove('hidden');
+    // TIDAK otomatis main musik karena butuh interaksi user
+    // biarkan tombol musik manual ditekan
+  } else {
+    loginScreenDiv.style.display = 'flex';
+    mainContentDiv.style.display = 'none';
+    logoutBtnDiv.classList.add('hidden');
+  }
+});
 </script>
 </body>
 </html>
