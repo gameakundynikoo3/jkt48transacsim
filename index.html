@@ -526,7 +526,7 @@ nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-
   <div class="login-card">
     <div class="logo">JKT48</div>
     <div class="sub">TRANSACTION SIMULATOR</div>
-    <input type="text" id="loginName" placeholder="Masukkan nama fans" autocomplete="off">
+    <input type="text" id="loginName" placeholder="Masukkan nama" autocomplete="off">
     <button id="loginBtn">LOGIN</button>
     <div id="loginError" class="error-msg hidden"></div>
   </div>
@@ -565,7 +565,7 @@ nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-
 
     <div class="card" id="cartCard">
       <div class="monitor-bar"><div class="dots"><div></div></div><div class="title">JKT48 MERCH LIST PAY</div><div style="width:40px"></div></div>
-      <div class="card-body"><div class="section-label">🛒 Daftar Belanja Fans</div><div id="cartItems"></div><div class="divider"></div><div class="total-row"><div class="total-label">TOTAL</div><div class="total-val" id="cartTotal">0 POINT</div></div></div>
+      <div class="card-body"><div class="section-label">Daftar Belanja Fans</div><div id="cartItems"></div><div class="divider"></div><div class="total-row"><div class="total-label">TOTAL</div><div class="total-val" id="cartTotal">0 POINT</div></div></div>
       <div class="card-foot"><button class="btn-red" id="btnMintaKartu" onclick="requestCard()">MINTA KARTU OFC DARI FANS</button></div>
     </div>
     <div class="card hidden" id="scanCard">
@@ -737,6 +737,26 @@ function restockItem(id){
   else toast(` JKT48 Points kurang! Butuh ${item.restockCost} point`,'#f87171');
 }
 
+function saveGame(){
+  const user = localStorage.getItem('jkt48_user') || 'default';
+  const key = 'jkt48_gamedata_' + user;
+  const day = (window.mngDay !== undefined) ? window.mngDay : 1;
+  const served = (window.mngFansServed !== undefined) ? window.mngFansServed : 0;
+  localStorage.setItem(key, JSON.stringify({ jkt48Points, successPoints, mngDay: day, mngFansServed: served }));
+}
+function loadGame(){
+  const user = localStorage.getItem('jkt48_user') || 'default';
+  const key = 'jkt48_gamedata_' + user;
+  const raw = localStorage.getItem(key);
+  if(!raw) return;
+  try{
+    const d = JSON.parse(raw);
+    if(d.jkt48Points !== undefined) jkt48Points = d.jkt48Points;
+    if(d.successPoints !== undefined) successPoints = d.successPoints;
+    if(d.mngDay !== undefined) mngDay = d.mngDay;
+    if(d.mngFansServed !== undefined) mngFansServed = d.mngFansServed;
+  }catch(e){}
+}
 function updateUI(){
   document.getElementById('jkt48PointsDisplay').innerText=jkt48Points;
   document.getElementById('successPointsDisplay').innerText=successPoints;
@@ -744,6 +764,7 @@ function updateUI(){
   document.getElementById('xpFill').style.width=pct+'%';
   document.getElementById('xpLabel').textContent=`${successPoints} / ${LEVEL2_THRESHOLD} POINT → Level 2`;
   renderInventory();
+  saveGame();
 }
 function addJkt48Points(amt){ jkt48Points+=amt; updateUI(); toast(`🎫 +${amt} JKT48 Point dari transaksi!`,'#4ade80'); }
 function addSuccessPoints(delta){
@@ -860,7 +881,7 @@ function goPage(id){
   document.getElementById('nav-'+id).classList.add('active');
 }
 function genParticles(){ for(let i=0;i<20;i++){ const d=document.createElement('div'); d.className='particle'; d.style.cssText=`left:${Math.random()*100}%;width:${2+Math.random()*3}px;height:${2+Math.random()*3}px;animation-duration:${3+Math.random()*4}s;animation-delay:${Math.random()*5}s`; document.getElementById('particles').appendChild(d); } }
-genParticles(); renderInventory(); updateUI(); loadFan();
+genParticles(); loadGame(); renderInventory(); updateUI(); loadFan();
 
 // ========== LEVEL 2 — MnG (Meet & Greet) ==========
 const MNG_MEMBERS = [
@@ -892,7 +913,7 @@ const SESSION_HOURS = [
   "10:00–11:00","11:00–12:00","12:00–13:00","13:00–14:00",
   "14:00–15:00","15:00–16:00","16:00–17:00","17:00–18:00"
 ];
-let mngDay         = 1;
+var mngDay         = 1;
 let mngSchedule    = [];
 let mngCurrentSesi = 0;
 let mngFanData     = null;
@@ -902,7 +923,7 @@ let mngTimerCount  = 0;
 let mngTimerMax    = 0;
 let mngTimerInt    = null;
 let mngOverSecs    = 0;
-let mngFansServed  = 0;
+var mngFansServed  = 0;
 function rndInt(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
 function rndEl(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function mngGenSchedule(){
@@ -1349,6 +1370,7 @@ function login() {
   mainContentDiv.style.display = 'block';
   userNameSpan.textContent = name;
   logoutBtnDiv.classList.remove('hidden');
+  loadGame(); updateUI();
   startMusic(); // mulai musik setelah login
 }
 logoutBtnDiv.addEventListener('click', showLogoutModal);
