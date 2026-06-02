@@ -774,6 +774,7 @@ for(let i=0;i<60;i++){
 let jkt48Points   = 350000;
 let successPoints = 0;
 const LEVEL2_THRESHOLD = 1000;
+const LEVEL3_THRESHOLD = 10000;
 let currentFan=null, currentTotal=0, phase="queue";
 
 function checkZeroStockAndNotify() {
@@ -835,11 +836,18 @@ function loadGame(){
 function updateUI(){
   document.getElementById('jkt48PointsDisplay').innerText=jkt48Points;
   document.getElementById('successPointsDisplay').innerText=successPoints;
-  const pct=Math.min(100,(successPoints/LEVEL2_THRESHOLD)*100);
-  document.getElementById('xpFill').style.width=pct+'%';
-  document.getElementById('xpLabel').textContent=`${successPoints} / ${LEVEL2_THRESHOLD} POINT → Level 2`;
+  
+  let target = LEVEL2_THRESHOLD;
+  let nextLevel = 2;
+  if (successPoints >= LEVEL2_THRESHOLD) {
+    target = LEVEL3_THRESHOLD;
+    nextLevel = 3;
+  }
+  const pct = Math.min(100, (successPoints / target) * 100);
+  document.getElementById('xpFill').style.width = pct + '%';
+  document.getElementById('xpLabel').innerHTML = `${successPoints} / ${target} → Level ${nextLevel}`;
+  
   renderInventory();
-  saveGame();
 }
 function checkLevel2Unlock() {
   const pageL2 = document.getElementById('page-l2');
@@ -1230,64 +1238,93 @@ function mngStartSession(){
   if(c)c.classList.remove('warning','over');
   if(n)n.classList.remove('warning','over');
 }
-function mngRunTimer(){
+function mngRunTimer() {
   hideEl('btnStartSession');
   showEl('btnStop');
-  document.getElementById('sinfoStatus').textContent='BERJALAN';
-  document.getElementById('sinfoStatus').style.color='var(--green)';
-  document.getElementById('timerLabel').textContent='DETIK TERSISA';
-  mngTimerInt=setInterval(()=>{
+  document.getElementById('sinfoStatus').textContent = 'BERJALAN';
+  document.getElementById('sinfoStatus').style.color = 'var(--green)';
+  document.getElementById('timerLabel').textContent = 'DETIK TERSISA';
+  
+  mngTimerInt = setInterval(() => {
     mngTimerCount--;
-    mngRenderTimer(mngTimerCount,mngTimerMax);
-    if(mngTimerCount<=Math.ceil(mngTimerMax*0.3)){
+    mngRenderTimer(mngTimerCount, mngTimerMax);
+    
+    if (mngTimerCount <= Math.ceil(mngTimerMax * 0.3) && mngTimerCount > 0) {
       document.getElementById('timerCircle').classList.add('warning');
       document.getElementById('timerNumber').classList.add('warning');
-      document.getElementById('timerLabel').textContent='SEGERA HENTIKAN!';
+      document.getElementById('timerLabel').textContent = 'SEGERA HENTIKAN!';
     }
-    if(mngTimerCount<=0){
+    
+    if (mngTimerCount === 0) {
+      // Waktu habis, tapi tidak dihentikan otomatis
       clearInterval(mngTimerInt);
       document.getElementById('timerCircle').classList.remove('warning');
       document.getElementById('timerCircle').classList.add('over');
       document.getElementById('timerNumber').classList.remove('warning');
       document.getElementById('timerNumber').classList.add('over');
-      document.getElementById('timerLabel').textContent='WAKTU HABIS! HENTIKAN!';
-      document.getElementById('sinfoStatus').textContent='LEWAT WAKTU';
-      document.getElementById('sinfoStatus').style.color='#f87171';
-      let ov=0;
-      mngTimerInt=setInterval(()=>{ov++;mngOverSecs=ov;document.getElementById('timerNumber').textContent='+'+ov;},1000);
+      document.getElementById('timerLabel').textContent = 'WAKTU HABIS! HENTIKAN SEGERA!';
+      document.getElementById('sinfoStatus').textContent = 'LEWAT WAKTU';
+      document.getElementById('sinfoStatus').style.color = '#f87171';
+      
+      // Timer terus berjalan negatif (hitung keterlambatan)
+      mngTimerInt = setInterval(() => {
+        mngTimerCount--;
+        mngRenderTimer(mngTimerCount, mngTimerMax);
+        const terlambat = Math.abs(mngTimerCount);
+        document.getElementById('timerNumber').textContent = '+' + terlambat;
+      }, 1000);
     }
-  },1000);
+  }, 1000);
 }
-function mngStop(){
+function mngStop() {
   clearInterval(mngTimerInt);
   hideEl('btnStop');
-  const onTime=mngTimerCount>=0;
-  let delta,msg,type;
-  if(onTime){
-    delta=mngTicketData.pts;
-    msg=`Sesi selesai tepat waktu! +${delta} Poin Keberhasilan.`;
-    type='success';
-  } else {
-    const penalty=Math.min(mngTicketData.pts,mngOverSecs*8);
-    delta=-penalty;
-    msg=`Waktu lewat ${mngOverSecs} detik! -${penalty} Poin Keberhasilan.`;
-    type='penalty';
+  
+  let delta = 0;
+  let type = '';
+  let msg = '';
+  
+  // Waktu tersisa (bisa positif, 0, atau negatif jika sudah lewat)
+  const remaining = mngTimerCount;
+  
+  if (remaining === 0) {
+    // Tepat waktu habis → BONUS BESAR
+    delta = 100;
+    type = 'success';
+    msg = `Sesi berhenti tepat waktu! +${delta} Poin Keberhasilan.`;
+  } 
+  else if (remaining > 0) {
+    // Dihentikan sebelum waktu habis → PENALTI
+    delta = -50;
+    type = 'penalty';
+    msg = `Dihentikan sebelum waktunya (sisa ${remaining} detik)! ${delta} Poin Keberhasilan.`;
+  } 
+  else {
+    // Waktu sudah habis dan telat dihentikan
+    const terlambat = Math.abs(remaining); // sudah lewat berapa detik
+    delta = -terlambat * 10; // setiap detik keterlambatan -10 poin
+    type = 'penalty';
+    msg = `Waktu habis! Terlambat ${terlambat} detik! ${delta} Poin Keberhasilan.`;
   }
+  
   addSuccessPoints(delta);
   mngFansServed++;
-  document.getElementById('sinfoStatus').textContent=onTime?'SELESAI':'LEWAT';
-  document.getElementById('sinfoStatus').style.color=onTime?'var(--green)':'#f87171';
-  document.getElementById('timerLabel').textContent=onTime?'TEPAT WAKTU':'TERLAMBAT';
-  const res=document.getElementById('mngSessionResult');
-  res.innerHTML=`<div class="result-box ${type}" style="margin-top:12px">
-    <div class="result-emoji">${delta>0?'✅':'⚠️'}</div>
-    <div class="result-title" style="color:${type==='success'?'var(--green)':'var(--gold)'}">${type==='success'?'SESI BERHASIL':'WAKTU LEWAT'}</div>
+  
+  document.getElementById('sinfoStatus').textContent = (remaining <= 0 ? 'SELESAI' : 'DIHENTIKAN');
+  document.getElementById('sinfoStatus').style.color = (delta >= 0 ? 'var(--green)' : '#f87171');
+  document.getElementById('timerLabel').textContent = (delta >= 0 ? 'TEPAT WAKTU' : 'PENALTI');
+  
+  const res = document.getElementById('mngSessionResult');
+  res.innerHTML = `<div class="result-box ${type}" style="margin-top:12px">
+    <div class="result-emoji">${delta >= 0 ? '✅' : '⚠️'}</div>
+    <div class="result-title" style="color:${delta >= 0 ? 'var(--green)' : 'var(--gold)'}">${delta >= 0 ? 'SESI BERHASIL' : 'PENALTI'}</div>
     <div class="result-sub">${msg}</div>
-    <div class="pts-delta ${delta>0?'plus':'minus'}">${delta>0?'+'+delta:delta} POIN</div>
+    <div class="pts-delta ${delta >= 0 ? 'plus' : 'minus'}">${delta >= 0 ? '+' + delta : delta} POIN</div>
   </div>`;
+  
   showEl('mngSessionResult');
   showEl('mngNextWrap');
-  mngPhase='done';
+  mngPhase = 'done';
 }
 function mngRenderTimer(cur,max){
   const pct=Math.max(0,cur/max);
